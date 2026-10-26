@@ -9,8 +9,9 @@ small, executable foundation for inspecting a proposed host application before a
 - Planned first feature: Data Import Center (CSV upload, mapping, validation preview, background import,
   progress, and row-error download).
 - Implemented today: feature-manifest validation and a read-only `feature inspect` command.
-- Not implemented: feature installation, CSV processing, database access, Supabase provisioning, background
-  jobs, and production credentials.
+- Not implemented: feature installation and production deployment. Local-only implementation work for the
+  Import Center is governed by `docs/tasks/import-center.md`; it does not authorize remote Supabase access or
+  production credentials.
 
 ## Local setup
 

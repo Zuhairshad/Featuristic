@@ -12,8 +12,8 @@ feature under active design is `import-center`; installation and database operat
 | --- | --- | --- |
 | `apps/cli/**` | Core installer | Keep inspection deterministic and read-only. Do not execute inspected-project code. |
 | `packages/contracts/**` | Contracts | Review schema or public-contract changes before dependent work proceeds. |
-| `features/**` | Feature author | Keep manifests declarative; do not add host mutations here. |
-| `fixtures/**` | Verification | Pin dependencies and keep all Supabase operations unconfigured unless a task explicitly provisions local Supabase. |
+| `features/**` | Feature author | Keep manifests declarative; do not add host mutations or reference-host source here. |
+| `fixtures/**` | Verification | Reference-host application source and local-only Supabase work live here. Pin dependencies and keep Supabase unconfigured unless an accepted task explicitly authorizes local provisioning. |
 | `docs/**` | Maintainer | Record decisions, task evidence, limitations, and exact commands. |
 
 ## Safety and verification
@@ -24,4 +24,8 @@ feature under active design is `import-center`; installation and database operat
 - A dependency declaration is evidence only. It does not establish host compatibility or active integration.
 - Run `pnpm test`, `pnpm typecheck`, `pnpm lint`, and `pnpm build` for changes to this foundation.
 - Do not add installation, migrations, background jobs, network calls, or production credentials without an
-  approved task and explicit verification plan.
+  accepted task under `docs/tasks/` and its explicit verification plan. A task authorizes only the paths,
+  operations, dependencies, and environment named in it.
+- Keep local Supabase configuration, migrations, database tests, and seed data under the relevant fixture's
+  `supabase/` directory. Never run a linked or remote database command unless a later task explicitly names
+  the remote environment and its approval.
