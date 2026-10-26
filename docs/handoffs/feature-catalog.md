@@ -45,3 +45,26 @@ The root `pnpm` checks were not run: the change is documentation-only and touche
   relay it or authorize the mailbox edit.
 - The earlier `claude/feature-catalog` branch (Claude A's draft skeleton) is preserved untouched and is
   unrelated to this branch.
+
+## Review follow-up (corrections F1 and F2)
+
+Task: [`docs/tasks/candidate-catalog-corrections.md`](../tasks/candidate-catalog-corrections.md).
+
+- Review: [PR #4](https://github.com/Zuhairshad/Featuristic/pull/4), independent review of this PR by Claude A,
+  verdict REQUEST CHANGES. Findings and exact replacement text are in
+  `docs/handoffs/feature-catalog-review.md` on `claude/candidate-catalog-review-a` (head `7817405`).
+- Reviewed PR head: `eca2a48f0b0d1293e2a49d6892312202e0b8c42a`, base `4d76ca7eaf92ae1a70298563eae5b28ddbf5df82`.
+- Canonical tip when corrected: `9fe1aedba8ef1aad5e842a0dbf9bbcb9665a9ad2`. As the task directs, this branch was
+  not merged or rebased, so it remains behind canonical by coordination-only commits.
+- Correction commit: recorded in the next section.
+
+| Finding | Change in `docs/roadmap/candidate-features.md` |
+| --- | --- |
+| F1 (required) | Removed the claim that the nine-of-twelve count is "why the research treats a job primitive as shared". It now says the family is the most widely stated dependency in the per-candidate lists and that the extract states the research treats job primitives as shared but does not state why. |
+| F2 (required) | Removed the mapping of the audit primitive onto the Audit and Investigation Console and Background Operations Center entries. It now says the audit primitive is named as a shared dependency and that the extract does not say which per-candidate entries correspond to it, so the catalog does not map or infer any. |
+| O1, O2 (optional) | Not applied: the task limits changes to F1 and F2 unless a changed sentence needs them to stay factual, and neither changed sentence does. |
+
+The F1 and F2 replacement text was taken from the review handoff verbatim. The candidate table, the
+grouping table, the release sequence and every other paragraph are unchanged. The earlier statement in this
+handoff that the dependency map "regroups the per-candidate dependency lists by family" and "does not add
+dependencies" is now fully accurate after F2.

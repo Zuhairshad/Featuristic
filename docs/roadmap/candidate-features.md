@@ -69,12 +69,11 @@ Grouping of the dependencies exactly as stated per candidate in the table above:
 
 Reading the map:
 
-- The queue/jobs/scheduler family is the most widely stated dependency (nine of twelve candidates), which is
-  why the research treats a job primitive as shared.
-- The audit primitive is named in the research as shared. In the per-candidate lists above it appears most
-  directly as the durable event sink and actor context of the Audit and Investigation Console (candidate 12),
-  and as logs, durable state, and actor/tenant context for the Background Operations Center (candidate 7).
-  This catalog does not infer further audit dependencies that the source does not state.
+- The queue/jobs/scheduler family is the most widely stated dependency in the per-candidate lists (nine of
+  twelve candidates). The source extract states that the research treats job primitives as shared dependencies;
+  it does not state why.
+- The audit primitive is named in the research as a shared dependency. The source extract does not say which
+  per-candidate dependency entries correspond to it, so this catalog does not map or infer any.
 - Candidates whose dependencies include an external provider (4 billing provider, 5 provider API, 8
   processing provider, 9 enterprise identity provider) depend on integrations the repository has no task for.
 
