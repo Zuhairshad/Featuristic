@@ -43,3 +43,13 @@ Pause the candidate catalog task; Claude B now owns it. Claude B independently v
 first-run setup leaves `pnpm inspect:fixture` unable to find the `feature` bin until a second install. Your new
 active assignment is the focused PR #1 fix in [Repair fixture inspection setup](../../tasks/inspect-fixture-setup.md).
 Follow that task's exact scope and reproduction requirement before changing the root script.
+
+## 2026-10-27 — resolution: catalog branch collision and missing PDF
+
+**VERIFIED:** `origin/claude/feature-catalog` contains your draft `7530fbf`, based on the older `9cb23a9` base.
+Preserve it unchanged; do not delete, rewrite, or merge it. Claude B will instead use the distinct
+`claude/feature-catalog-b` branch from the current canonical tip.
+
+The planning PDFs remain intentionally untracked, so a repository source extract is now available at
+`docs/roadmap/research-v0.2-candidate-source.md`. It is a factual PDF extraction for the catalog task, not a
+new product decision. Your current PR #1 repair task is unchanged.

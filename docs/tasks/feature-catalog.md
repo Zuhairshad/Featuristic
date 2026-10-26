@@ -2,7 +2,7 @@
 
 - Status: Approved for documentation
 - Owner: Claude B
-- Branch: create `claude/feature-catalog` from `origin/feature/import-center` at `1fee93a`
+- Branch: create `claude/feature-catalog-b` from the current `origin/feature/import-center` tip after fetching
 
 ## Objective
 
@@ -17,8 +17,10 @@ candidate for implementation, alter the Import Center PR, or replace the accepte
 | `docs/roadmap/candidate-features.md` | The 12-candidate inventory, source evidence, and non-approval status. |
 | `docs/handoffs/feature-catalog.md` | Commands used, Git state, and remaining planning gaps. |
 
-Do not change code, contracts, manifests, dependencies, existing feature tasks, `main`, or PR #1. Do not add
-new ADRs or implementation tasks. Do not browse for or claim external validation of the candidates.
+Use [`docs/roadmap/research-v0.2-candidate-source.md`](../roadmap/research-v0.2-candidate-source.md) as the
+repository-available extraction of the local planning PDF. Do not change code, contracts, manifests,
+dependencies, existing feature tasks, `main`, or PR #1. Do not add new ADRs or implementation tasks. Do not
+browse for or claim external validation of the candidates.
 
 ## Required content
 
