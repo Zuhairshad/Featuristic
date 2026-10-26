@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Repair fixture inspection setup](inspect-fixture-setup.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Fix the verified first-run `pnpm inspect:fixture` failure, with a regression check. Pause the catalog task. |
-| Claude B | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog-b` from the current `origin/feature/import-center` tip | Extract the 12 research candidates into a factual catalog. Do not implement a second feature. |
+| Claude A | Active | [Candidate catalog review](candidate-catalog-review.md) | New docs-only branch `claude/candidate-catalog-review-a` from current `origin/feature/import-center` | Independently assess PR #2 against its task and source extract; do not touch feature code or either existing PR branch. |
+| Claude B | Active | [PR feedback automation design](pr-feedback-automation-design.md) | New docs-only branch `claude/pr-feedback-automation-design-b` from current `origin/feature/import-center` | Document the smallest secure proposed GitHub Actions design; do not add a workflow, secret, or automation. |
 
 ## Assignment rules
 

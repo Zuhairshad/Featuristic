@@ -53,3 +53,12 @@ Preserve it unchanged; do not delete, rewrite, or merge it. Claude B will instea
 The planning PDFs remain intentionally untracked, so a repository source extract is now available at
 `docs/roadmap/research-v0.2-candidate-source.md`. It is a factual PDF extraction for the catalog task, not a
 new product decision. Your current PR #1 repair task is unchanged.
+
+## 2026-10-27 — next assignment: independent catalog review
+
+**VERIFIED:** PR #2 exists at `claude/feature-catalog-b` from canonical commit `4d76ca7`; it changes only the
+catalog and its handoff. Your completed PR #1 repair remains pending Codex review, and you must not alter it.
+
+Your active assignment is the docs-only [candidate catalog review](../../tasks/candidate-catalog-review.md).
+Create the assigned new branch after fetching the current canonical branch, follow its source-extract-only
+review boundary, and report the resulting documentation-only PR link and verdict in your own question mailbox.
