@@ -4,6 +4,7 @@
 - Date: 2026-10-27
 - Task: [`docs/tasks/pr-feedback-automation-design.md`](../tasks/pr-feedback-automation-design.md)
 - Origin: the workflow proposal in the Codex review of PR #1 (comment `6425693207`)
+- Amended 2026-10-27 with the coordinator's baseline security decisions (see "Coordinator decisions"). Still Proposed.
 
 ## Context
 
@@ -57,7 +58,7 @@ The action's own example workflow uses the same split.
 
 | Job | Permissions | Holds `OPENAI_API_KEY` | Purpose |
 | --- | --- | --- | --- |
-| `codex` | `contents: read` only | Yes | Check out, run the action, expose `final-message` as a job output. |
+| `codex` | `contents: read` only | Yes, through the protected environment `codex-pr-review` | Wait for environment approval, then check out, run the action, expose `final-message` as a job output. |
 | `post_feedback` | `pull-requests: write` (plus `issues: write` only if the comment call requires it) | No | Post the review as one PR comment. |
 
 - Set `permissions:` explicitly at workflow and job level. GitHub's guidance is to grant `GITHUB_TOKEN` the
@@ -108,10 +109,33 @@ The action's own example workflow uses the same split.
 | `OPENAI_API_KEY` | Lets the action call the OpenAI API for the review. | GitHub Actions secret only. |
 
 No value, example token, or key-shaped string appears in this ADR, in a repository file, or in a log. Rotate or
-revoke through the OpenAI Platform if it leaks, as the action's security page advises. Because GitHub gives
-read access to repository secrets to anyone with write access, the key's blast radius is the set of people with
-write access, and a same-repository PR author can change the workflow file in their own PR. Consider an
-environment with required reviewers for the secret; that is an open decision (see below), not part of this design.
+revoke through the OpenAI Platform if it leaks, as the action's security page advises.
+
+**Protected environment (coordinator decision).** `OPENAI_API_KEY` is held by the GitHub Actions environment
+`codex-pr-review`, which has at least one repository-maintainer required reviewer. The `codex` job declares
+that environment, so the review begins only after a maintainer approves the run. This deliberate manual release
+protects the secret from unreviewed same-repository PR code. It matters because GitHub gives read access to
+repository secrets to anyone with write access, and a same-repository PR author can change the workflow file
+in their own PR; the environment gate means that change cannot reach the secret until a maintainer has looked at
+the run. GitHub's secure-use guidance also notes that workflows using environment secrets "are not run in an
+isolated environment", so approval is a gate, not a sandbox. Reopening a PR starts another run that needs its
+own approval. **Assumption to verify at implementation:** that a job referencing a protected environment is
+held before the environment's secrets are released; this is GitHub's documented environments behavior but its
+page was not read for this ADR.
+
+### 6a. Protected workflow and prompt paths (coordinator decision)
+
+A future implementation task must add repository protection for **both** `.github/workflows/codex-pr-review.yml`
+and the workflow's static prompt file, so neither can change without review. The task must use GitHub
+CODEOWNERS or equivalent path protection and verify that the mechanism actually enforces review on those paths.
+**If CODEOWNERS or path protection is unavailable, that task must stop and record the alternative for review.**
+It must not substitute a weaker control.
+
+### 6b. Version pins (coordinator decision)
+
+`actions/checkout`, `openai/codex-action`, and any posting action are resolved to **full-length commit SHAs only
+in the future implementation task**, using then-current official sources. No version or SHA is chosen, guessed,
+or pinned in this ADR; the sketch below keeps placeholders on purpose.
 
 ### 7. Response path
 
@@ -141,6 +165,7 @@ jobs:
   codex:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    environment: codex-pr-review   # protected; maintainer approval releases OPENAI_API_KEY
     permissions:
       contents: read
     outputs:
@@ -193,22 +218,34 @@ those documents. Treat wording as a close paraphrase and re-check the live pages
 and `safety-strategy` at the pinned version; that the posted comment fits GitHub's comment size limit (truncate
 if needed, limit not verified here); and runner behavior of `drop-sudo` on the chosen runner image.
 
-## Open decisions for the coordinator
+## Coordinator decisions (2026-10-27)
 
-1. Whether the secret lives in an environment with required reviewers instead of a plain repository secret.
-2. Whether write-access contributors editing `.github/workflows/**` in their own PR is acceptable, or the path
-   needs code-owner protection. This design does not decide it.
-3. Where the static prompt lives and who owns it, since PR-controlled files are part of the untrusted surface.
-4. Which action versions to pin, resolved to full-length commit SHAs at implementation time.
+Recorded from `docs/coordination/responses/claude-b.md`. They are decisions about a future implementation; they do
+not accept this ADR or authorize any workflow.
+
+1. **Environment.** `OPENAI_API_KEY` lives in the protected environment `codex-pr-review` with at least one
+   repository-maintainer required reviewer; the review begins after that approval (section 6).
+2. **Protected paths.** The implementation task protects `.github/workflows/codex-pr-review.yml` and its static
+   prompt, or stops and records an alternative if CODEOWNERS/path protection is unavailable (section 6a).
+3. **Pins.** Full commit SHAs for every action are resolved only in the implementation task from then-current
+   official sources (section 6b).
+
+Still for the implementation task to settle: the exact path and content of the static prompt (the protection
+above applies to it), and the assumptions listed under Sources.
 
 ## Acceptance checklist for a future implementation task
 
 An implementation is accepted only when a **separate approved task** exists and all of the following have evidence:
 
 - [ ] A separate approved implementation task names the exact paths, the workflow file, and its verification plan.
-- [ ] `OPENAI_API_KEY` is configured as a repository (or environment) secret by a maintainer; the value never
-      appears in a file, log, or comment.
-- [ ] Actions and third-party action versions are pinned to full-length commit SHAs, recorded in the handoff.
+- [ ] The environment `codex-pr-review` exists with at least one repository-maintainer required reviewer, and
+      `OPENAI_API_KEY` is configured there as an environment secret by a maintainer; the value never appears in a
+      file, log, or comment.
+- [ ] A test run shows the `codex` job waiting for approval and the review not starting until a maintainer approves.
+- [ ] CODEOWNERS or equivalent protection covers `.github/workflows/codex-pr-review.yml` and its static prompt, with
+      evidence that review is enforced; if unavailable, the task stopped and recorded the alternative for review.
+- [ ] `actions/checkout`, `openai/codex-action`, and any posting action are pinned to full-length commit SHAs
+      resolved in the implementation task from then-current official sources, recorded in the handoff.
 - [ ] A **trusted test PR** from the same repository produces exactly **one** review comment.
 - [ ] A fork PR (or an equivalent check) shows the job skipped or secret-less, with no secret exposure.
 - [ ] Posting the comment does **not** start another run (the Actions run list shows no new run).

@@ -53,6 +53,31 @@ PR description.
 
 Nothing was executed against GitHub Actions: no workflow exists to run, and none was added.
 
+## Coordinator decision follow-up (2026-10-27)
+
+Source: `docs/coordination/responses/claude-b.md`, "coordinator decision: automation-design follow-up". The ADR
+stays **Proposed** with its no-config/no-secret boundary. Only the ADR and this handoff were amended (plus the
+outgoing mailbox, as the task allows).
+
+| Decision | Where recorded |
+| --- | --- |
+| Future workflow holds `OPENAI_API_KEY` in the protected environment `codex-pr-review`, with at least one repository-maintainer required reviewer; the review begins after approval. | ADR sections 3 and 6, the sketch, and the acceptance checklist. |
+| A future implementation task protects `.github/workflows/codex-pr-review.yml` and its static prompt via CODEOWNERS/path protection, or stops and records the alternative for review (no weaker substitute). | ADR section 6a and the acceptance checklist. |
+| `actions/checkout`, `openai/codex-action`, and any posting action are resolved to full commit SHAs only in the future implementation task, from then-current official sources; none is guessed or pinned now. | ADR section 6b and the acceptance checklist. |
+
+The former "open decisions" section is replaced by "Coordinator decisions". The only items left to the
+implementation task are the exact static-prompt path and content, and the assumptions listed under Sources.
+
+New assumption recorded: that a job referencing a protected environment is held before its secrets are
+released. The GitHub environments page was not read for this amendment.
+
+Git state for this amendment:
+
+- Base canonical at the original design: `595b7f8`. Canonical has since advanced to `ce1362f` with a
+  coordination-only commit; this branch was not merged with it, because that would touch paths outside the
+  authorized ones.
+- Amendment commit (ADR and handoff content): recorded in the next section once pushed.
+
 ## Deferred implementation steps (require a separate approved task)
 
 1. Resolve the open decisions in the ADR (environment secret with reviewers, `.github/workflows/**` ownership,
