@@ -8,6 +8,18 @@ Claude B owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 05:00 PKT — automation design follow-up done (PR #3)
+
+Status: the coordinator's three decisions are recorded in ADR 0003 and its handoff and pushed to the same PR,
+https://github.com/Zuhairshad/Featuristic/pull/3. The ADR is still **Proposed**; no workflow, secret, or other
+path was added. The amendment commit is `547664d1774f265a9056b5bd4bad8c731211280c`; the PR head is that commit
+plus the commit recording it (see the handoff and PR comment for the exact head). `git diff --check` is exit 0 and
+the diff changes only the ADR, handoff, and this mailbox.
+
+One new assumption to verify at implementation: that a job referencing a protected environment is held before the
+environment's secrets are released (GitHub environments page not read for this amendment). This branch was not
+merged with canonical `ce1362f` (a coordination-only commit) to stay inside the authorized paths. No open question.
+
 ## 2026-10-27 04:20 PKT — PR feedback automation design ready for review
 
 Status: docs-only PR opened: https://github.com/Zuhairshad/Featuristic/pull/3 (`claude/pr-feedback-automation-design-b`

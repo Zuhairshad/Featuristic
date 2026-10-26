@@ -76,7 +76,10 @@ Git state for this amendment:
 - Base canonical at the original design: `595b7f8`. Canonical has since advanced to `ce1362f` with a
   coordination-only commit; this branch was not merged with it, because that would touch paths outside the
   authorized ones.
-- Amendment commit (ADR and handoff content): recorded in the next section once pushed.
+- Amendment commit (ADR and handoff content): `547664d1774f265a9056b5bd4bad8c731211280c`.
+- PR head: that commit plus one commit that only records this hash and updates the mailbox. A file cannot contain
+  its own hash, so read the final PR head from `git log -1` or the PR. The exact final head is also stated in
+  the PR comment and mailbox note for this follow-up.
 
 ## Deferred implementation steps (require a separate approved task)
 
