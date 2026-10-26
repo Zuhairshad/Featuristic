@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "0.1",
+  "id": "import-center",
+  "version": "0.1.0",
+  "displayName": "Data Import Center",
+  "maturity": "experimental",
+  "requires": ["tenant-context", "object-storage", "background-jobs", "database"],
+  "effects": ["file-upload", "object-storage-write", "database-write", "background-job"]
+}
