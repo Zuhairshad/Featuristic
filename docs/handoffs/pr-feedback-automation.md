@@ -73,13 +73,51 @@ released. The GitHub environments page was not read for this amendment.
 
 Git state for this amendment:
 
-- Base canonical at the original design: `595b7f8`. Canonical has since advanced to `ce1362f` with a
-  coordination-only commit; this branch was not merged with it, because that would touch paths outside the
-  authorized ones.
+- Base canonical at the original design: `595b7f8`. Canonical had since advanced to `ce1362f`, and this branch
+  was not merged with it at that point, to stay inside the authorized paths. **Superseded:** the branch was
+  later synchronized by a normal merge; see "Base synchronization" below.
 - Amendment commit (ADR and handoff content): `547664d1774f265a9056b5bd4bad8c731211280c`.
 - PR head: that commit plus one commit that only records this hash and updates the mailbox. A file cannot contain
   its own hash, so read the final PR head from `git log -1` or the PR. The exact final head is also stated in
   the PR comment and mailbox note for this follow-up.
+
+## Base synchronization
+
+Task: [`docs/tasks/pr-feedback-automation-sync.md`](../tasks/pr-feedback-automation-sync.md). Purpose: this branch
+predated canonical coordination commits, so GitHub's comparison showed unrelated deletions of files this branch
+never touched.
+
+| Item | Value |
+| --- | --- |
+| Head before synchronization | `c5d55f3580202ffee79ddf961ca53e2c9532d5cc` |
+| Original merge base | `595b7f8e878a6d516ace9a0d1333f72bbd16c7d6` |
+| Canonical merged | `origin/feature/import-center` at `f1fcf1e1e7752787ecfc2a3980b79e3147ae5f42` |
+| Merge commit | `fc47967d42116c2b528b25294b402ee7ed86720f` (a normal two-parent merge; no rebase, no force-push) |
+| Conflicts | None. Canonical and branch changed disjoint files. |
+
+The PR head is the merge commit plus one commit that only records these values and the results below. A file
+cannot contain its own hash, so read the final head from `git log -1` or the PR.
+
+What the merge brought in, all preserved exactly as canonical has them: `docs/coordination/responses/claude-a.md`,
+`docs/coordination/responses/claude-b.md`, `docs/tasks/assignments.md`, and the new
+`docs/tasks/candidate-catalog-corrections.md`, `docs/tasks/pr-feedback-automation-review.md`,
+`docs/tasks/pr-feedback-automation-sync.md`. ADR 0003 is byte-identical to `c5d55f3`; its design content was not
+changed. No workflow, secret, credential, dependency, code, manifest, or contract was added or changed. No
+mailbox was modified and no PR comment was posted in this task.
+
+Commands run and observed results (before this recording commit):
+
+| Command | Result |
+| --- | --- |
+| `git merge --no-ff origin/feature/import-center` | Exit 0, merge commit `fc47967`, no conflicts. |
+| `git diff --quiet origin/feature/import-center HEAD -- <each canonical file above>` | All six identical to canonical. |
+| `git diff --quiet c5d55f3 HEAD -- docs/adr/0003-pr-feedback-automation.md` | ADR identical to its pre-merge content. |
+| `git diff --name-only origin/feature/import-center...HEAD` | `docs/adr/0003-pr-feedback-automation.md`, `docs/coordination/questions/claude-b.md`, `docs/handoffs/pr-feedback-automation.md`. |
+| `git diff --name-status origin/feature/import-center HEAD` (two-dot, i.e. the tree difference) | The same three paths only (one modified, two added); no deletions. |
+| `git diff --check origin/feature/import-center...HEAD` | Exit 0, no whitespace errors. |
+
+The PR #3 comparison is limited to the automation-design files and Claude B's outgoing status note. PR #3 is held
+for Claude A's independent review and is not merged.
 
 ## Deferred implementation steps (require a separate approved task)
 
