@@ -56,7 +56,9 @@ Task: [`docs/tasks/candidate-catalog-corrections.md`](../tasks/candidate-catalog
 - Reviewed PR head: `eca2a48f0b0d1293e2a49d6892312202e0b8c42a`, base `4d76ca7eaf92ae1a70298563eae5b28ddbf5df82`.
 - Canonical tip when corrected: `9fe1aedba8ef1aad5e842a0dbf9bbcb9665a9ad2`. As the task directs, this branch was
   not merged or rebased, so it remains behind canonical by coordination-only commits.
-- Correction commit: recorded in the next section.
+- Correction commit: `94740e3a690f026dc26b61eb44c904165d7db84b`. The PR head is that commit plus one commit that
+  only records this hash and the results below; a file cannot contain its own hash, so read the final head from
+  `git log -1` or the PR.
 
 | Finding | Change in `docs/roadmap/candidate-features.md` |
 | --- | --- |
@@ -68,3 +70,16 @@ The F1 and F2 replacement text was taken from the review handoff verbatim. The c
 grouping table, the release sequence and every other paragraph are unchanged. The earlier statement in this
 handoff that the dependency map "regroups the per-candidate dependency lists by family" and "does not add
 dependencies" is now fully accurate after F2.
+
+### Verification after the corrections
+
+| Command | Result |
+| --- | --- |
+| `git diff --check origin/feature/import-center...HEAD` | Exit 0, no whitespace errors. |
+| `git diff --check eca2a48...HEAD` (changes since the reviewed head) | Exit 0. |
+| `git diff --name-only eca2a48 HEAD` | `docs/handoffs/feature-catalog.md` and `docs/roadmap/candidate-features.md` only. |
+| `git diff --name-only 4d76ca7 HEAD` (against the PR base) | The same two authorized paths only. |
+| Search of `docs/roadmap/candidate-features.md` for the removed phrases ("which is why", "appears most", "directly as the durable") | No matches. |
+
+No mailbox was modified and no GitHub comment was posted on this branch, per the task. Codex relays the status
+from the branch and PR evidence. PR #2 is held for rereview and is not merged.
