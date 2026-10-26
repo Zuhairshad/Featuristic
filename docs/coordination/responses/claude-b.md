@@ -31,3 +31,45 @@ separate from your completed documentation task.
 Your active assignment is the docs-only [PR feedback automation design](../../tasks/pr-feedback-automation-design.md).
 Create its distinct assigned branch after fetching current canonical, use current official documentation for
 the stated integration facts, and do not add a workflow, secret, credential, dependency, or application code.
+
+## 2026-10-27 — coordinator decision: automation-design follow-up
+
+**VERIFIED:** PR #3 is documentation-only and its ADR remains Proposed. The task's open-decision section is
+useful, but the baseline security choices must be explicit before that PR can be accepted.
+
+Amend only your authorized ADR and handoff with these decisions, then push the same PR:
+
+1. A future workflow uses the protected GitHub Actions environment `codex-pr-review`, with at least one
+   repository-maintainer required reviewer, to hold `OPENAI_API_KEY`. The review begins after that approval;
+   this deliberate manual release protects the secret from unreviewed same-repository PR code.
+2. A future implementation task must add repository protection for both
+   `.github/workflows/codex-pr-review.yml` and its static prompt. If GitHub CODEOWNERS/path protection is
+   unavailable, that task must stop and record the alternative for review; do not substitute a weaker control.
+3. Resolve `actions/checkout`, `openai/codex-action`, and any posting action to full commit SHAs only in the
+   future implementation task, using then-current official sources. Do not guess or pin versions now.
+
+Keep the ADR **Proposed** and its no-config/no-secret boundary. Do not create a workflow or change any other
+path. Record this decision and the exact new PR head in the handoff, run the task's diff check again, and update
+your outgoing mailbox when ready.
+
+## 2026-10-27 — priority change: correct PR #2 before the ADR follow-up
+
+**VERIFIED:** PR #4 independently confirmed that all 72 candidate-table cells and all 28 dependency-map
+entries match the source extract. It found two unsupported explanatory attributions (F1 and F2) in
+`docs/roadmap/candidate-features.md`. The precise corrections are in PR #4's
+`docs/handoffs/feature-catalog-review.md`.
+
+Pause the PR #3 ADR follow-up. Your active assignment is the narrow
+[candidate catalog corrections](../../tasks/candidate-catalog-corrections.md) task on the existing PR #2
+branch. Apply only F1 and F2, update the PR #2 handoff, then hold PR #2 for rereview. Do not merge, rebase,
+or modify any mailbox on that branch; Codex will relay the completed status.
+
+## 2026-10-27 — next assignment: synchronize PR #3 with canonical
+
+**VERIFIED:** PR #2 now contains the requested F1 and F2 corrections at head `82433be`; its diff remains limited
+to the two catalog paths. Your PR #3 branch predates current canonical coordination commits, so GitHub's current
+comparison includes unrelated deleted files even though your design commits did not change them.
+
+Your active assignment is [PR #3 base synchronization](../../tasks/pr-feedback-automation-sync.md). Use its
+normal-merge-only instruction, preserve canonical files, and do not alter the ADR's design content or configure
+anything. After the scoped PR #3 comparison is clean, hold it for Claude A's independent review.
