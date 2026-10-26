@@ -8,6 +8,24 @@ Claude A owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 01:36 PKT — Status: fixture setup repair done; Question: catalog branch name collision
+
+**Status (task `inspect-fixture-setup.md`):** reproduced and fixed on PR #1. The documented install, build,
+`inspect:fixture` sequence failed on `93176e7` (`feature: not found`, exit 1) and passes on `eae8d0c` (exit 0) in a
+clean disposable checkout; root `pnpm test`, `typecheck`, `lint` and `build` also pass there. Only `package.json`
+and `README.md` changed outside `docs/`. Evidence is in the handoff and on the PR.
+
+**Decision needed (affects Claude B's assigned branch):** the remote branch `origin/claude/feature-catalog`
+already exists. I created it from `9cb23a9` for the catalog task before you reassigned it, and it holds one
+commit, `7530fbf` (a draft skeleton plus my mailbox question below). Claude B is assigned the same name from
+`1fee93a`, so B's push would be rejected or would need to build on `7530fbf`. I have not deleted, rewritten or
+modified it. Which do you want: (a) B bases on `7530fbf`, or (b) I delete the remote branch so B starts clean
+from `1fee93a`? I will act on your written answer here.
+
+**Relevant to B:** `FeatureKit_Research_v2.pdf`, the catalog's only source, is not in the repository or in my
+cloud checkout (no PDF in any ref; the bootstrap handoff says the planning PDFs were left untracked). My open
+question about that is on `7530fbf`'s copy of this file and is not answered on the canonical branch.
+
 ## 2026-10-27 01:05 PKT — Question: was revert 3bfc0fb intended, and should the review fixes stay?
 
 **Decision needed (affects code):** `3bfc0fb` ("Revert fix(fixture): address Import Center review findings")

@@ -91,7 +91,7 @@ All run from a freshly created local stack (`supabase stop --no-backup`, then `s
 | `pnpm typecheck` | Passed (CLI, contracts, fixture). |
 | `pnpm lint` | Passed. Biome checked 48 files, no findings. |
 | `pnpm build` | Passed. Next `16.4.3` built the new routes and the Proxy. |
-| `pnpm inspect:fixture` | Passed after `pnpm install --frozen-lockfile` re-linked the `feature` bin (see Failures). Still `supportAssessment: not-determined`. |
+| `pnpm inspect:fixture` | Originally passed only after a second `pnpm install`. Fixed in `eae8d0c`: now passes on the first run after install and build (see "Fixture inspection setup repair"). Still `supportAssessment: not-determined`. |
 
 ### What the integration test proves
 
@@ -157,9 +157,8 @@ Also addressed from the same review:
   data-modifying `WITH` inside a subselect (replaced by an invoker-rights helper), an expected SQLSTATE of
   `P0001` where Storage raises `42501`, and a wrong plan count. I also first set `[auth.email] enable_signup =
   false`, which disables the email provider entirely; corrected to the global `[auth] enable_signup = false`.
-- `pnpm inspect:fixture` first failed with `feature: not found`: pnpm could not link the `feature` bin during
-  install because the CLI had not been built yet. Re-running `pnpm install --frozen-lockfile` after `pnpm build`
-  fixed it with no lockfile change.
+- `pnpm inspect:fixture` first failed with `feature: not found` after install and build. Reproduced independently by
+  Claude B and fixed in `eae8d0c`; see "Fixture inspection setup repair" below.
 - Not run: any hosted or remote Supabase check, a production build against a real deployment, and load or
   concurrency testing.
 
@@ -183,6 +182,43 @@ Also addressed from the same review:
 - Installer templates, target-domain mapping, remote Supabase, scheduling and webhooks remain deferred per the
   task.
 
+## Fixture inspection setup repair
+
+Task: [`docs/tasks/inspect-fixture-setup.md`](../tasks/inspect-fixture-setup.md).
+
+**Cause.** The root script ran `feature inspect ...`, which needs a `feature` bin that pnpm creates during
+`pnpm install`. That bin points at `apps/cli/dist/main.js`, which does not exist until `pnpm build`, so pnpm warns
+(`Failed to create bin ... ENOENT`) and never creates the link. The documented order (install, build,
+`inspect:fixture`) therefore failed until a second install.
+
+**Fix (`eae8d0c`).** The root script now runs the built entry directly:
+`"inspect:fixture": "node apps/cli/dist/main.js inspect fixtures/next-supabase"`. The README's second example
+used the same missing bin, so it now reads `node apps/cli/dist/main.js inspect /absolute/path/to/project`.
+No dependency, lockfile, CLI behavior, fixture source, or Supabase file changed. The only non-docs files that
+differ from the reviewed head `a181b5e` are `package.json` and `README.md` (one line each).
+
+**Reproduction and verification.** Each run used a fresh disposable directory made with `git archive` of the
+commit (no `node_modules`, no `dist`), with each command run once, in this order:
+
+| Step | Command | Before (`93176e7`) | After (`eae8d0c`) |
+| --- | --- | --- | --- |
+| 1 | `CI=true pnpm install --frozen-lockfile` | exit 0, bin-link warning | exit 0, same warning |
+| 2 | `pnpm build` | exit 0 | exit 0 |
+| 3 | `pnpm inspect:fixture` | **exit 1**, `sh: 1: feature: not found` | **exit 0**, `"supportAssessment": "not-determined"` |
+| 4 | root `pnpm test` | not run | exit 0 (CLI 3, contracts 2, fixture 50) |
+| 5 | root `pnpm typecheck` | not run | exit 0 |
+| 6 | root `pnpm lint` | not run | exit 0 (Biome checked 52 files, no findings) |
+| 7 | root `pnpm build` | exit 0 (step 2) | exit 0 |
+
+**Regression check.** The task authorizes only `package.json`, `README.md` and this handoff, so no test file was
+added. The regression check is the clean-checkout sequence above, which fails on `93176e7` and passes on
+`eae8d0c`. `node_modules/.bin/feature` is still absent after the first install in both runs, which is expected
+and no longer matters.
+
+**Remaining quirk.** The bin-link warning still prints during install, because `apps/cli/package.json` declares
+a `bin` whose file is created only by the build. It is harmless. Removing it would mean changing CLI packaging
+or dependencies, which this task excludes.
+
 ## Git state
 
 Recorded when the handoff was updated after the Codex re-review. `git log -1` and the PR show the final head;
@@ -191,10 +227,11 @@ a file cannot contain its own hash.
 | Item | Value |
 | --- | --- |
 | Starting (accepted) base | `82afe74` on `feature/import-center` |
-| `feature/import-center` tip at this update | `1993be7`, fully merged into the PR branch (0 commits behind, merge base = `1993be7`) |
-| Commits Codex added to `feature/import-center` since the starting base | `58de882` (coordination protocol), `38e9472` (revert-question resolution), `1993be7` (re-review follow-up). Documentation only; no implementation file changed. |
-| PR branch head before this docs-only commit | `98f941f` (merge of `1993be7`); the merge itself changed only `docs/coordination/responses/claude-a.md` |
-| Last commit that changed Import Center code | `fddb8d7` (merge of review fixes `b5705d6` and `95fa189`). `cf3d690` has an identical tree. The verification results above were produced on that tree, and no code has changed since. |
+| `feature/import-center` tip at this update | `2492a12` ("assign fixture setup repair"), fully merged into the PR branch via `93176e7` (0 commits behind). The earlier tip `1993be7` was merged via `98f941f`. |
+| Commits Codex added to `feature/import-center` since the starting base | `58de882`, `38e9472`, `1993be7`, then `9cb23a9`, `1fee93a`, `2492a12`. Documentation only; no implementation file changed. |
+| PR branch head before the repair | `a181b5e` (the head Claude B verified); `93176e7` then merged the base, changing only `docs/` |
+| Repair commit | `eae8d0c` (`package.json` and `README.md`, one line each). The docs-only handoff commit on top of it is the PR head. |
+| Last commit that changed Import Center code | `fddb8d7` (merge of review fixes `b5705d6` and `95fa189`). `cf3d690` has an identical tree. The Docker-backed verification results above were produced on that tree; the repair does not touch any file those checks exercise except the root script and README. |
 | `main` | `f697f31`, not touched |
 | Pull request | head `claude/busy-newton-mx3fgc` -> base `feature/import-center`, open and unmerged |
 
