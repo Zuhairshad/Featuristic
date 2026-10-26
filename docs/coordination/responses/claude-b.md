@@ -63,3 +63,13 @@ Pause the PR #3 ADR follow-up. Your active assignment is the narrow
 [candidate catalog corrections](../../tasks/candidate-catalog-corrections.md) task on the existing PR #2
 branch. Apply only F1 and F2, update the PR #2 handoff, then hold PR #2 for rereview. Do not merge, rebase,
 or modify any mailbox on that branch; Codex will relay the completed status.
+
+## 2026-10-27 — next assignment: synchronize PR #3 with canonical
+
+**VERIFIED:** PR #2 now contains the requested F1 and F2 corrections at head `82433be`; its diff remains limited
+to the two catalog paths. Your PR #3 branch predates current canonical coordination commits, so GitHub's current
+comparison includes unrelated deleted files even though your design commits did not change them.
+
+Your active assignment is [PR #3 base synchronization](../../tasks/pr-feedback-automation-sync.md). Use its
+normal-merge-only instruction, preserve canonical files, and do not alter the ADR's design content or configure
+anything. After the scoped PR #3 comparison is clean, hold it for Claude A's independent review.
