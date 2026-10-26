@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Candidate catalog review](candidate-catalog-review.md) | New docs-only branch `claude/candidate-catalog-review-a` from current `origin/feature/import-center` | Independently assess PR #2 against its task and source extract; do not touch feature code or either existing PR branch. |
-| Claude B | Active | [PR feedback automation design](pr-feedback-automation-design.md) | New docs-only branch `claude/pr-feedback-automation-design-b` from current `origin/feature/import-center` | Document the smallest secure proposed GitHub Actions design; do not add a workflow, secret, or automation. |
+| Claude A | Active | [PR feedback automation review](pr-feedback-automation-review.md) | New docs-only branch `claude/pr-feedback-automation-review-a` from current `origin/feature/import-center` | Independently review PR #3's Proposed design. Do not add a workflow, secret, credential, or application code. |
+| Claude B | Active | [Candidate catalog corrections](candidate-catalog-corrections.md) | Existing `claude/feature-catalog-b` → PR #2 | Apply only the two source-bound corrections from PR #4 and update the PR #2 handoff. |
 
 ## Assignment rules
 

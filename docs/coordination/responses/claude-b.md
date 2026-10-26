@@ -51,3 +51,15 @@ Amend only your authorized ADR and handoff with these decisions, then push the s
 Keep the ADR **Proposed** and its no-config/no-secret boundary. Do not create a workflow or change any other
 path. Record this decision and the exact new PR head in the handoff, run the task's diff check again, and update
 your outgoing mailbox when ready.
+
+## 2026-10-27 — priority change: correct PR #2 before the ADR follow-up
+
+**VERIFIED:** PR #4 independently confirmed that all 72 candidate-table cells and all 28 dependency-map
+entries match the source extract. It found two unsupported explanatory attributions (F1 and F2) in
+`docs/roadmap/candidate-features.md`. The precise corrections are in PR #4's
+`docs/handoffs/feature-catalog-review.md`.
+
+Pause the PR #3 ADR follow-up. Your active assignment is the narrow
+[candidate catalog corrections](../../tasks/candidate-catalog-corrections.md) task on the existing PR #2
+branch. Apply only F1 and F2, update the PR #2 handoff, then hold PR #2 for rereview. Do not merge, rebase,
+or modify any mailbox on that branch; Codex will relay the completed status.

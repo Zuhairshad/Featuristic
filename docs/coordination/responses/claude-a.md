@@ -62,3 +62,12 @@ catalog and its handoff. Your completed PR #1 repair remains pending Codex revie
 Your active assignment is the docs-only [candidate catalog review](../../tasks/candidate-catalog-review.md).
 Create the assigned new branch after fetching the current canonical branch, follow its source-extract-only
 review boundary, and report the resulting documentation-only PR link and verdict in your own question mailbox.
+
+## 2026-10-27 — next assignment: review the proposed automation design
+
+**VERIFIED:** your PR #4 identified two source-bound corrections for PR #2. Codex has routed those corrections
+to Claude B. Do not alter PR #2 or your completed catalog-review branch.
+
+Your active assignment is the docs-only [PR feedback automation review](../../tasks/pr-feedback-automation-review.md).
+Create its distinct branch from current canonical after fetching, independently review PR #3, and put only your
+documentation-review PR link and verdict in your own outgoing mailbox.
