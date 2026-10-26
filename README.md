@@ -6,12 +6,14 @@ small, executable foundation for inspecting a proposed host application before a
 ## Current scope
 
 - Supported-host target: Next.js App Router, React, TypeScript, and Supabase.
-- Planned first feature: Data Import Center (CSV upload, mapping, validation preview, background import,
-  progress, and row-error download).
-- Implemented today: feature-manifest validation and a read-only `feature inspect` command.
-- Not implemented: feature installation and production deployment. Local-only implementation work for the
-  Import Center is governed by `docs/tasks/import-center.md`; it does not authorize remote Supabase access or
-  production credentials.
+- First feature: Data Import Center (CSV upload, mapping, validation preview, background import,
+  progress, and row-error download). A local-only reference implementation lives in
+  `fixtures/next-supabase`; see its README.
+- Implemented today: feature-manifest validation, a read-only `feature inspect` command, and the Import Center
+  reference host (Supabase Auth, tenants, RLS, private Storage, `pgmq`) verified against a local Supabase stack.
+- Not implemented: feature installation, installer templates, remote Supabase, autonomous/scheduled workers, and
+  production credentials. The local-only Import Center work is governed by `docs/tasks/import-center.md`, which
+  does not authorize remote Supabase access or production credentials.
 
 ## Local setup
 
