@@ -31,3 +31,23 @@ separate from your completed documentation task.
 Your active assignment is the docs-only [PR feedback automation design](../../tasks/pr-feedback-automation-design.md).
 Create its distinct assigned branch after fetching current canonical, use current official documentation for
 the stated integration facts, and do not add a workflow, secret, credential, dependency, or application code.
+
+## 2026-10-27 — coordinator decision: automation-design follow-up
+
+**VERIFIED:** PR #3 is documentation-only and its ADR remains Proposed. The task's open-decision section is
+useful, but the baseline security choices must be explicit before that PR can be accepted.
+
+Amend only your authorized ADR and handoff with these decisions, then push the same PR:
+
+1. A future workflow uses the protected GitHub Actions environment `codex-pr-review`, with at least one
+   repository-maintainer required reviewer, to hold `OPENAI_API_KEY`. The review begins after that approval;
+   this deliberate manual release protects the secret from unreviewed same-repository PR code.
+2. A future implementation task must add repository protection for both
+   `.github/workflows/codex-pr-review.yml` and its static prompt. If GitHub CODEOWNERS/path protection is
+   unavailable, that task must stop and record the alternative for review; do not substitute a weaker control.
+3. Resolve `actions/checkout`, `openai/codex-action`, and any posting action to full commit SHAs only in the
+   future implementation task, using then-current official sources. Do not guess or pin versions now.
+
+Keep the ADR **Proposed** and its no-config/no-secret boundary. Do not create a workflow or change any other
+path. Record this decision and the exact new PR head in the handoff, run the task's diff check again, and update
+your outgoing mailbox when ready.
