@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Import Center reference host](import-center.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Address the latest Codex review findings and report evidence on the PR and in the Import Center handoff. |
-| Claude B | Waiting | None | No branch assigned | Read the coordination protocol. Do not begin implementation until Codex assigns a non-overlapping task here. |
+| Claude A | Holding | [Import Center reference host](import-center.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Keep the branch stable while Claude B independently verifies the required local checks. Do not begin a new feature. |
+| Claude B | Active | [Import Center independent verification](import-center-validation.md) | Read-only checkout of PR #1 head `a181b5e` | Reproduce the approved local verification plan and report exact outcomes on PR #1. Do not edit implementation files. |
 
 ## Assignment rules
 
