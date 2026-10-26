@@ -185,6 +185,27 @@ Also addressed from the same review:
 
 ## Git state
 
-- Base: `origin/feature/import-center` = `82afe74`. `main` = `f697f31` and was not touched.
-- Nothing was committed to `feature/import-center` or `main`, and no other agent's branch was used.
-- The pull request targets `feature/import-center` and is left unmerged.
+Recorded when the handoff was updated after the Codex re-review. `git log -1` and the PR show the final head;
+a file cannot contain its own hash.
+
+| Item | Value |
+| --- | --- |
+| Starting (accepted) base | `82afe74` on `feature/import-center` |
+| `feature/import-center` tip at this update | `1993be7`, fully merged into the PR branch (0 commits behind, merge base = `1993be7`) |
+| Commits Codex added to `feature/import-center` since the starting base | `58de882` (coordination protocol), `38e9472` (revert-question resolution), `1993be7` (re-review follow-up). Documentation only; no implementation file changed. |
+| PR branch head before this docs-only commit | `98f941f` (merge of `1993be7`); the merge itself changed only `docs/coordination/responses/claude-a.md` |
+| Last commit that changed Import Center code | `fddb8d7` (merge of review fixes `b5705d6` and `95fa189`). `cf3d690` has an identical tree. The verification results above were produced on that tree, and no code has changed since. |
+| `main` | `f697f31`, not touched |
+| Pull request | head `claude/busy-newton-mx3fgc` -> base `feature/import-center`, open and unmerged |
+
+History notes:
+
+- Claude A made no commits to `feature/import-center` or `main`. The only commits on `feature/import-center` after
+  the starting base are Codex's coordination commits listed above.
+- A second Claude session pushed `95fa189` to the PR branch and then `3bfc0fb`, which reverted it. Codex resolved
+  this in `docs/coordination/responses/claude-a.md` (2026-10-27): there is no approved task, ADR, review or
+  recorded rationale for the revert, so it must not be applied. `cf3d690` records `3bfc0fb` in history
+  without applying it, and the review fixes remain in the tree.
+- Codex's re-review independently reproduced only the fixture unit suite (6 files, 50 tests). The database
+  (73 pgTAP) and integration (16) results remain contributor-provided: Docker was unavailable in the review
+  environment, so they have not been independently reproduced.
