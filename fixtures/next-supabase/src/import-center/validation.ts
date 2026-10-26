@@ -188,6 +188,19 @@ export function previewRows(
   let importable = 0;
 
   for (const row of valid) {
+    // Mirrors commit_import_batch: a key already stored by any earlier import wins over every row in
+    // this file, so each such row is duplicate_existing. Only keys new to the tenant have a first
+    // writer within the file, and later rows with that key are duplicate_in_file.
+    if (existingKeys.has(row.dedupeKey)) {
+      duplicateExisting++;
+      issues.push({
+        rowNumber: row.rowNumber,
+        code: "duplicate_existing",
+        message: "Duplicate key: a record with this key was already imported. Row would be skipped.",
+        values: row.values,
+      });
+      continue;
+    }
     const earlier = firstSeen.get(row.dedupeKey);
     if (earlier !== undefined) {
       duplicateInFile++;
@@ -195,15 +208,6 @@ export function previewRows(
         rowNumber: row.rowNumber,
         code: "duplicate_in_file",
         message: `Duplicate key: same as row ${earlier} in this file. Row would be skipped.`,
-        values: row.values,
-      });
-    } else if (existingKeys.has(row.dedupeKey)) {
-      duplicateExisting++;
-      firstSeen.set(row.dedupeKey, row.rowNumber);
-      issues.push({
-        rowNumber: row.rowNumber,
-        code: "duplicate_existing",
-        message: "Duplicate key: a record with this key was already imported. Row would be skipped.",
         values: row.values,
       });
     } else {

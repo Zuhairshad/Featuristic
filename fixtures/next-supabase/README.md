@@ -21,10 +21,10 @@ table (`tenant_id`, `dedupe_key`, JSON `payload`); it is not a generic host-tabl
 | Topic | Rule |
 | --- | --- |
 | Who | Supabase Auth user who is an `admin` in `tenant_members`. Members and other tenants get nothing. Authority always comes from `auth.uid()` and membership, never from a client-supplied tenant or role. |
-| Limits | CSV only, 5 MB, 10,000 data rows, 100 columns, 10,000 characters per cell, batches of 100 rows. |
+| Limits | CSV only, 5 MB, 10,000 data rows, 100 columns, 10,000 characters per cell, batches of 100 rows. Request bodies are capped while they are read (upload 5 MB plus multipart framing, JSON 64 KB), so a missing or forged `Content-Length` cannot make the server buffer more. |
 | Row numbers | 1-based among data rows; the header is not counted. |
 | Duplicate key | The admin picks one or more mapped key columns. Each value is NFKC-normalized, trimmed, whitespace-collapsed and lowercased; the key is the JSON array of those values, unique per tenant. |
-| Duplicate rows | The first row with a key wins. A later row with the same key, in the same file (`duplicate_in_file`) or already stored by any earlier import (`duplicate_existing`), is **skipped**, persisted as a row error, and never overwrites stored data. |
+| Duplicate rows | The first writer of a key wins. If the key is already stored by any earlier import, **every** file row with it is `duplicate_existing`. Otherwise the first file row imports and later ones are `duplicate_in_file`. Duplicates are **skipped**, persisted as row errors, and never overwrite stored data. The preview applies the same rule, so its codes and counts match what is persisted. |
 | Invalid rows | Wrong column count, empty key, or over-long cell: skipped and persisted as row errors. The import still completes. |
 | Retries | A failed batch becomes visible again after the queue visibility timeout (30 s). After 3 failed deliveries the message is archived and the import is marked `failed`. Only a fixed, sanitized summary is stored; raw errors and row data are never put in `error_summary`. |
 | Redelivery | Each message carries `run_id` and `cursor`. The commit applies only when both still match, so duplicate or superseded messages are acknowledged without effect. |
@@ -46,13 +46,15 @@ pnpm dev
 Seed accounts (local only, password `local-dev-password`): `admin-a@example.test` (admin of tenant A),
 `member-a@example.test` (non-admin member of A), `admin-b@example.test` (admin of tenant B).
 
-Nothing runs the worker automatically. Either use the **Run worker once** development control on an import
-page (shown only when `IMPORT_CENTER_DEV_CONTROLS=true` and the Supabase URL is loopback) or call the
-internally authenticated endpoint, which processes a bounded number of messages:
+Nothing runs the worker automatically, and **no signed-in user can start it**. The worker uses a service-role
+client over a single global queue, so exposing it to any tenant admin would let one tenant advance another
+tenant's import. Only an operator holding `IMPORT_WORKER_SECRET` can start it, through the bounded endpoint:
 
 ```sh
 curl -X POST -H "Authorization: Bearer $IMPORT_WORKER_SECRET" "http://localhost:3000/api/internal/import-worker?max=5"
 ```
+
+The endpoint is disabled when `IMPORT_WORKER_SECRET` is unset. An import stays `Queued` until an operator runs it.
 
 ## Verification commands
 

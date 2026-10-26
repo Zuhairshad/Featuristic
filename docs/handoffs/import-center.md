@@ -9,8 +9,9 @@
 - Pull request: head `claude/busy-newton-mx3fgc` -> base `feature/import-center` (not merged)
 - Starting commit: `82afe74`
 - Implementation commit: `959b8c4` (`feat(fixture): local Import Center reference host`)
-- Final commit: the head of the pull request, which is this handoff's own commit on top of `959b8c4`. A file
-  cannot contain its own hash; read it from `git log -1` or the PR.
+- Handoff commit: `f8ceab1`
+- Review-fix commit: the head of the pull request (fixes for the Codex review below). A file cannot contain its
+  own hash; read it from `git log -1` or the PR.
 
 ## Delivered behavior
 
@@ -31,7 +32,7 @@ root `package.json`, `pnpm-workspace.yaml` and the manifest were not changed.
 | Replay | `replay_import`, replay button | New `run_id`, fresh message at the persisted cursor. Completed imports are never replayed. |
 | Progress and safe errors in the UI | `/imports`, `/imports/[id]` | Status, progress bar, imported/duplicate/invalid counts, sanitized `error_summary`, row-error table, CSV download. |
 | No secrets in the UI | verified | The browser run asserts no keys or local ports appear in rendered HTML. The service-role key has no `NEXT_PUBLIC_` prefix and is only read by the worker. |
-| Local worker command/endpoint | `POST /api/internal/import-worker`, "Run worker once" control | Bearer secret (constant-time compare); disabled if `IMPORT_WORKER_SECRET` is unset. The dev control needs `IMPORT_CENTER_DEV_CONTROLS=true` **and** a loopback Supabase URL. Nothing runs the worker on a schedule. |
+| Local worker command/endpoint | `POST /api/internal/import-worker` | Operator-only: bearer secret (constant-time compare); disabled if `IMPORT_WORKER_SECRET` is unset. No user-session path (page, Server Action, route) can start the service-role worker, enforced by a unit test. Nothing runs the worker on a schedule. |
 
 ## Dependencies (all exact-pinned, fixture-scoped, used)
 
@@ -78,9 +79,9 @@ All run from a freshly created local stack (`supabase stop --no-backup`, then `s
 | `cd fixtures/next-supabase && pnpm exec supabase stop --no-backup && pnpm exec supabase start` | Passed. Migration and seed applied on a fresh database. |
 | `cd fixtures/next-supabase && pnpm exec supabase db reset --local` | Passed. Migration and seed re-applied from scratch. |
 | `cd fixtures/next-supabase && pnpm supabase:test:db` (`supabase test db --local`) | **Passed: 73/73 pgTAP tests.** Positive admin access; negative tenant B, non-admin member and anonymous access on all five tables and the upload path; direct-write denial; `start_import`/`replay_import` authorization and state rules; worker functions and `pgmq` not callable by sessions; batch-commit semantics (in-file duplicate, duplicate of a prior import, invalid row, stale cursor/run, completion). |
-| `cd fixtures/next-supabase && pnpm test` | **Passed: 3 files, 29 tests** (CSV parsing, mapping, validation, normalized keys, duplicate preview, error CSV including formula-injection neutralization). |
-| `cd fixtures/next-supabase && pnpm test:integration` | **Passed: 13/13** against local Auth, Storage, Postgres and `pgmq`. |
-| `pnpm test` | Passed. fixture 29, contracts 2, CLI 3. |
+| `cd fixtures/next-supabase && pnpm test` | **Passed: 5 files, 46 tests** (CSV parsing, mapping, validation, normalized keys, duplicate preview parity, error CSV including formula-injection neutralization, bounded request bodies, and a guard that no user-session code path can start the service-role worker). |
+| `cd fixtures/next-supabase && pnpm test:integration` | **Passed: 16/16** against local Auth, Storage, Postgres and `pgmq`. |
+| `pnpm test` | Passed. fixture 46, contracts 2, CLI 3. |
 | `pnpm typecheck` | Passed (CLI, contracts, fixture). |
 | `pnpm lint` | Passed. Biome checked 48 files, no findings. |
 | `pnpm build` | Passed. Next `16.4.3` built the new routes and the Proxy. |
@@ -108,16 +109,37 @@ All run from a freshly created local stack (`supabase stop --no-backup`, then `s
 - A mutation check (not committed): disabling the worker's stale-cursor guard made the interruption test fail,
   while the database commit guard still prevented data corruption.
 
-### Browser run (manual, not committed)
+### Browser run (manual, not repeatable, not committed)
 
-I drove the built app in Chromium with a Playwright script kept outside the repository: sign in, upload a
-232-row CSV, map columns, choose the key, preview ("230 of 232 rows will be imported ... Nothing has been
-written yet"), start (shows **Queued**, not run inline), run the worker three times (100, 200, 232 of 232),
-download the error CSV (2 errors), see the job in the list, and confirm no key or port appears in the HTML.
-Then tenant B got 404 for the import page and the error download, tenant B's list did not include it, the
-non-admin member was refused (403), and anonymous access got 401. All 15 checks passed on the final build.
-This is not an automated repository test: Playwright is not a declared dependency and adding one was not
-authorized.
+I exercised the built app in Chromium with a Playwright script kept outside the repository, after the review
+fixes: sign in, upload a 232-row CSV, map, preview, start (shows **Queued**, not run inline), run the worker
+through the operator endpoint three times (100, 200, 232 of 232), download the error CSV, see the job in the
+list, and confirm no key or port appears in the HTML. Tenant B got 404 for the import page and error download,
+the non-admin member got 403, anonymous got 401, no "Run worker once" control is rendered, and 6 MB and
+chunked 8 MB uploads got 413. All 22 checks passed.
+
+**Treat this as a manual observation, not browser verification.** There is no committed Playwright setup,
+script, screenshot, or CI job (Playwright is not an authorized dependency), so desktop/mobile layout,
+keyboard behavior, console output and network behavior are unverified and the run cannot be repeated from the
+repository. A forged short `Content-Length` was reset by Node's HTTP layer (`ECONNRESET`) before application
+code ran; the stream-level cap for that case is proven by the unit tests, not by this run.
+
+## Review response (Codex, comment 6425693207)
+
+| Finding | Verified | Fix | Regression evidence |
+| --- | --- | --- | --- |
+| HIGH: any tenant admin could invoke the dev Server Action, which ran the service-role worker over the global queue and could advance another tenant's import | Yes, by reading `runWorkerOnceAction` and `run-worker.ts` | Removed the Server Action, the "Run worker once" control, `devControlsEnabled`, and `IMPORT_CENTER_DEV_CONTROLS`. Only the secret-authenticated operator endpoint starts the worker. | `worker-exposure.test.ts` failed before the fix and passes now. Integration: a tenant B session token, a wrong secret, no secret, and a disabled endpoint all leave tenant A's import `queued` at cursor 0 with its message still queued; only the operator secret advances it. |
+| HIGH: 5 MB cap relied on `Content-Length` before `formData()`; a missing or forged length buffered an unbounded body | Yes: a missing header was read as 0 and `file.size` was checked only after buffering | New `limited-body.ts` enforces the cap on the stream (and rejects a missing-malformed or over-limit length early). Upload (5 MB + 64 KiB framing) and, for the same flaw, both JSON routes (64 KB) use it. The post-parse `file.size` check is kept. | `limited-body.test.ts`: omitted length, forged small length, over-limit declared length, malformed header, chunked and multipart bodies, early cancel. Real HTTP: declared 6 MB and chunked 8 MB uploads returned 413. |
+| MEDIUM: preview and import classified a repeated already-stored key differently | Yes: preview set `firstSeen` for the existing key, so the second row became `duplicate_in_file`, while the database marks both `duplicate_existing` | `previewRows` now checks stored keys first and applies the database's first-writer rule. | Unit test with two file rows sharing a stored key (failed before). Integration parity test: preview codes equal the persisted `import_row_errors`, and counts equal the import's counters. |
+
+Also addressed from the same review:
+
+- **Cancellation wording:** now "not currently approved", not "deferred". Member history stays out of scope because
+  the task and ADR make the Import Center admin-only.
+- **Test results:** re-run on a freshly created stack after the fixes; exact results are in the table above and
+  on the PR.
+- **Automation proposal (Codex review workflow):** not implemented here. `.github/workflows` and the
+  `OPENAI_API_KEY` secret are outside this task's authorized paths and need a separate approved design.
 
 ## Failures, retries, and skipped checks
 
@@ -137,8 +159,9 @@ authorized.
 
 ## Known limitations
 
-- **No cancellation.** The first brief asked for cancelling running imports; the approved task and ADR do not
-  include it, so I did not add one. A failed import can be replayed; an active one cannot be stopped.
+- **No cancellation.** The first brief asked for cancelling running imports. It is not currently approved in the
+  task or ADR (and is not on the task's deferred list either), so I did not add one. A failed import can be
+  replayed; an active one cannot be stopped.
 - **Admin-only.** Per the approved task, a non-admin member cannot list or view imports. A member-facing job
   list (the first brief's "current user's jobs") would need a task change.
 - No UI kit exists in the fixture, so the UI is plain React with one small stylesheet.

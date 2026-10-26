@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { type SupabaseClient, createClient } from "@supabase/supabase-js";
 import { Client as PgClient } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { POST as workerEndpoint } from "../../app/api/internal/import-worker/route";
 import { buildErrorCsv } from "../../src/import-center/error-csv";
 import { UPLOAD_BUCKET } from "../../src/import-center/limits";
 import {
@@ -413,5 +414,110 @@ describe("tenant and role isolation", () => {
       });
       expect(commit.error).not.toBeNull();
     }
+  });
+});
+
+describe("worker invocation is operator-only (cross-tenant write regression)", () => {
+  const SECRET = "integration-operator-secret";
+  const saved: Record<string, string | undefined> = {};
+  const envKeys = ["IMPORT_WORKER_SECRET", "NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
+
+  beforeAll(() => {
+    for (const key of envKeys) saved[key] = process.env[key];
+    process.env.NEXT_PUBLIC_SUPABASE_URL = API_URL;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = SERVICE_ROLE_KEY;
+  });
+
+  afterAll(() => {
+    for (const key of envKeys) {
+      if (saved[key] === undefined) delete process.env[key];
+      else process.env[key] = saved[key];
+    }
+  });
+
+  const call = (authorization?: string) =>
+    workerEndpoint(
+      new Request("http://localhost/api/internal/import-worker?max=5", {
+        method: "POST",
+        headers: authorization ? { authorization } : {},
+      }),
+    );
+
+  it("lets neither a tenant B admin session nor an unauthenticated caller make tenant A's import progress", async () => {
+    const id = await createImport(adminA, csv(makeRows(3)));
+    const before = await summary(adminA, id);
+    expect(before).toMatchObject({ status: "queued", cursor: 0 });
+
+    const sessionB = (await adminB.auth.getSession()).data.session;
+    expect(sessionB?.access_token).toBeTruthy();
+
+    // With the endpoint disabled (no secret configured), nothing runs.
+    delete process.env.IMPORT_WORKER_SECRET;
+    expect((await call(`Bearer ${SECRET}`)).status).toBe(503);
+
+    process.env.IMPORT_WORKER_SECRET = SECRET;
+    expect((await call()).status).toBe(401);
+    expect((await call("Bearer wrong")).status).toBe(401);
+    // A valid tenant B user token is not the operator secret.
+    expect((await call(`Bearer ${sessionB?.access_token}`)).status).toBe(401);
+    // Neither is tenant B's own session able to reach the worker functions directly.
+    expect((await adminB.rpc("import_queue_read", { p_visibility_timeout: 1 })).error).not.toBeNull();
+
+    expect(await summary(adminA, id)).toMatchObject({ status: "queued", cursor: 0, imported_count: 0 });
+    expect(await recordCount(id)).toBe(0);
+    expect((await queueCounts()).queued).toBe(1);
+  });
+
+  it("advances the import only for the operator secret, in bounded batches", async () => {
+    const id = await createImport(adminA, csv(makeRows(3)));
+    process.env.IMPORT_WORKER_SECRET = SECRET;
+
+    const response = await call(`Bearer ${SECRET}`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ outcomes: ["committed", "idle"] });
+    expect(await summary(adminA, id)).toMatchObject({ status: "completed", imported_count: 3 });
+  });
+});
+
+describe("preview matches what is persisted", () => {
+  it("reports the same codes and counts for keys already stored, repeated, invalid, and new", async () => {
+    const first = await createImport(adminA, csv([[`${tag}-stored@example.test`, "Stored"]]));
+    await runWorker(workerOptions(), 3);
+    expect((await summary(adminA, first)).status).toBe("completed");
+
+    const rows = [
+      [`${tag}-stored@example.test`, "Again 1"], // 1: stored key
+      [`${tag}-STORED@example.test `, "Again 2"], // 2: same stored key, repeated in this file
+      [`${tag}-new@example.test`, "New"], // 3: first writer of a new key
+      [`${tag}-new@example.test`, "New again"], // 4: repeated new key
+      ["", "Blank"], // 5: invalid
+    ];
+    const upload = await uploadCsv(adminA, TENANT_A, csv(rows));
+    createdPaths.push(upload.path);
+    const request = { tenantId: TENANT_A, path: upload.path, mapping, keyColumns: ["Email"] };
+
+    const preview = await previewImport(adminA, request);
+    expect(preview.issues.map((issue) => [issue.rowNumber, issue.code])).toEqual([
+      [1, "duplicate_existing"],
+      [2, "duplicate_existing"],
+      [4, "duplicate_in_file"],
+      [5, "missing_key"],
+    ]);
+
+    const second = await startImport(adminA, { ...request, fileName: "parity.csv" });
+    createdImports.push(second);
+    await runWorker(workerOptions(), 3);
+
+    const persisted = await listRowErrors(adminA, second);
+    expect(persisted.map((error) => [error.row_number, error.code])).toEqual(
+      preview.issues.map((issue) => [issue.rowNumber, issue.code]),
+    );
+    const done = await summary(adminA, second);
+    expect(done).toMatchObject({
+      status: "completed",
+      imported_count: preview.importableRows,
+      duplicate_count: preview.duplicateInFileRows + preview.duplicateExistingRows,
+      invalid_count: preview.invalidRows,
+    });
   });
 });
