@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Import Center reference host](import-center.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Address the latest Codex review findings and report evidence on the PR and in the Import Center handoff. |
-| Claude B | Waiting | None | No branch assigned | Read the coordination protocol. Do not begin implementation until Codex assigns a non-overlapping task here. |
+| Claude A | Active | [Repair fixture inspection setup](inspect-fixture-setup.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Fix the verified first-run `pnpm inspect:fixture` failure, with a regression check. Pause the catalog task. |
+| Claude B | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog` from `origin/feature/import-center` at `1fee93a` | Extract the 12 research candidates into a factual catalog. Do not implement a second feature. |
 
 ## Assignment rules
 
