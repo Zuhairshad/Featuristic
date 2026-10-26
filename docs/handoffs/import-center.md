@@ -10,8 +10,14 @@
 - Starting commit: `82afe74`
 - Implementation commit: `959b8c4` (`feat(fixture): local Import Center reference host`)
 - Handoff commit: `f8ceab1`
-- Review-fix commit: the head of the pull request (fixes for the Codex review below). A file cannot contain its
-  own hash; read it from `git log -1` or the PR.
+- Review-fix commits: `b5705d6` (this session) and `95fa189`, pushed to the same branch by a second Claude
+  session (`Claude-Session: ...AonG5ywFpv42Xx9yBwH56q`) while this session was working on the same findings.
+  Both fixed the same three issues with the same design. They were merged (no history rewrite), keeping one
+  body-limit module (this session's, which also bounds the JSON routes) plus the other session's route-level
+  `upload-route.test.ts` and its cancel-the-unread-body behavior. That session reported that it had **not** re-run
+  the database and integration checks (image pulls were blocked there); the results below were produced on the
+  merged tree. The merge commit is the head of the pull request. A file cannot contain its own hash; read it
+  from `git log -1` or the PR.
 
 ## Delivered behavior
 
@@ -79,9 +85,9 @@ All run from a freshly created local stack (`supabase stop --no-backup`, then `s
 | `cd fixtures/next-supabase && pnpm exec supabase stop --no-backup && pnpm exec supabase start` | Passed. Migration and seed applied on a fresh database. |
 | `cd fixtures/next-supabase && pnpm exec supabase db reset --local` | Passed. Migration and seed re-applied from scratch. |
 | `cd fixtures/next-supabase && pnpm supabase:test:db` (`supabase test db --local`) | **Passed: 73/73 pgTAP tests.** Positive admin access; negative tenant B, non-admin member and anonymous access on all five tables and the upload path; direct-write denial; `start_import`/`replay_import` authorization and state rules; worker functions and `pgmq` not callable by sessions; batch-commit semantics (in-file duplicate, duplicate of a prior import, invalid row, stale cursor/run, completion). |
-| `cd fixtures/next-supabase && pnpm test` | **Passed: 5 files, 46 tests** (CSV parsing, mapping, validation, normalized keys, duplicate preview parity, error CSV including formula-injection neutralization, bounded request bodies, and a guard that no user-session code path can start the service-role worker). |
+| `cd fixtures/next-supabase && pnpm test` | **Passed: 6 files, 50 tests** (CSV parsing, mapping, validation, normalized keys, duplicate preview parity, error CSV including formula-injection neutralization, bounded request bodies, a route-level upload size test, and a guard that no user-session code path can start the service-role worker). |
 | `cd fixtures/next-supabase && pnpm test:integration` | **Passed: 16/16** against local Auth, Storage, Postgres and `pgmq`. |
-| `pnpm test` | Passed. fixture 46, contracts 2, CLI 3. |
+| `pnpm test` | Passed. fixture 50, contracts 2, CLI 3. |
 | `pnpm typecheck` | Passed (CLI, contracts, fixture). |
 | `pnpm lint` | Passed. Biome checked 48 files, no findings. |
 | `pnpm build` | Passed. Next `16.4.3` built the new routes and the Proxy. |

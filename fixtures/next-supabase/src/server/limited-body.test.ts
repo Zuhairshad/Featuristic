@@ -5,7 +5,11 @@ import { UPLOAD_BODY_LIMIT_BYTES, readBodyLimited, readJsonLimited, readUploadFo
 /** A request whose body is delivered as a stream of chunks, with the headers we choose to send. */
 function streamed(totalBytes: number, headers: Record<string, string> = {}, chunkBytes = 64 * 1024) {
   let sent = 0;
+  let cancelled = false;
   const body = new ReadableStream<Uint8Array>({
+    cancel() {
+      cancelled = true;
+    },
     pull(controller) {
       if (sent >= totalBytes) return controller.close();
       const size = Math.min(chunkBytes, totalBytes - sent);
@@ -14,32 +18,35 @@ function streamed(totalBytes: number, headers: Record<string, string> = {}, chun
     },
   });
   const request = new Request("http://localhost/api/imports/upload", { method: "POST", headers, body, duplex: "half" } as RequestInit);
-  return { request, sentBytes: () => sent };
+  return { request, sentBytes: () => sent, wasCancelled: () => cancelled };
 }
 
 const OVER = UPLOAD_BODY_LIMIT_BYTES + 1024 * 1024;
 
 describe("readBodyLimited", () => {
   it("rejects an oversized body that omits Content-Length, and stops reading early", async () => {
-    const { request, sentBytes } = streamed(OVER);
+    const { request, sentBytes, wasCancelled } = streamed(OVER);
     expect(request.headers.get("content-length")).toBeNull();
     const result = await readBodyLimited(request, UPLOAD_BODY_LIMIT_BYTES);
     expect(result).toMatchObject({ ok: false, status: 413 });
+    expect(wasCancelled()).toBe(true);
     // The producer was cancelled soon after the cap instead of being drained to the end.
     expect(sentBytes()).toBeLessThan(OVER);
   });
 
   it("rejects an oversized body whose Content-Length is forged to look small", async () => {
-    const { request } = streamed(OVER, { "content-length": "100" });
+    const { request, wasCancelled } = streamed(OVER, { "content-length": "100" });
     expect(await readBodyLimited(request, UPLOAD_BODY_LIMIT_BYTES)).toMatchObject({ ok: false, status: 413 });
+    expect(wasCancelled()).toBe(true);
   });
 
   it("rejects an over-limit declared length before reading anything", async () => {
-    const { request, sentBytes } = streamed(OVER, { "content-length": String(OVER) });
+    const { request, sentBytes, wasCancelled } = streamed(OVER, { "content-length": String(OVER) });
     expect(await readBodyLimited(request, UPLOAD_BODY_LIMIT_BYTES)).toMatchObject({ ok: false, status: 413 });
-    // The helper never touched the body. The stream constructor itself prefetches one chunk (64 KiB).
-    expect(request.bodyUsed).toBe(false);
+    // The helper never read the body (the stream constructor itself prefetches one 64 KiB chunk) and
+    // released it.
     expect(sentBytes()).toBeLessThanOrEqual(64 * 1024);
+    expect(wasCancelled()).toBe(true);
   });
 
   it.each(["abc", "-5", "1e3", "12 34", ""])("rejects a malformed Content-Length %j", async (value) => {

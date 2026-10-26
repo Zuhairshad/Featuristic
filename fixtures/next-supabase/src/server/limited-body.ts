@@ -18,9 +18,13 @@ export async function readBodyLimited(request: Request, maxBytes: number): Promi
   if (declared !== null) {
     const length = Number(declared);
     if (!/^\d+$/.test(declared.trim()) || !Number.isSafeInteger(length)) {
+      await request.body?.cancel().catch(() => undefined);
       return { ok: false, status: 400, error: "Invalid Content-Length." };
     }
-    if (length > maxBytes) return { ok: false, status: 413, error: TOO_LARGE };
+    if (length > maxBytes) {
+      await request.body?.cancel().catch(() => undefined);
+      return { ok: false, status: 413, error: TOO_LARGE };
+    }
   }
   if (!request.body) return { ok: true, value: new Uint8Array() };
 
