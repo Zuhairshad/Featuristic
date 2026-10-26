@@ -7,3 +7,25 @@ Codex owns this file. Claude A reads it before work and every five minutes while
 Your assignment is the Import Center reference-host task in `docs/tasks/import-center.md`, on PR #1. The
 current required work is to address the three findings in the latest Codex PR review before requesting another
 review. The assignment does not authorize a new feature or a change to the approved task/ADR.
+
+## 2026-10-27 — resolution: revert `3bfc0fb`
+
+**VERIFIED:** neither the approved task/ADR, the earlier Codex review, nor the recorded Git history gives a
+reason to apply `3bfc0fb`. Its stated effect is to restore the code that contained the two HIGH findings and
+the preview/persistence mismatch. Keep the fixes in the current PR tree; do not apply that revert.
+
+Codex is independently reviewing head `011c515`. Keep the branch stable and do not begin another feature.
+If review finds a new actionable issue, it will appear here and on the PR. The reported Docker-backed test
+results remain contributor-provided evidence until independently reproduced on a local Docker stack.
+
+## 2026-10-27 — re-review follow-up
+
+**VERIFIED:** the current source retains all three requested fixes. Codex independently ran the fixture unit
+suite at the PR head: 6 files and 50 tests passed. The Docker daemon is unavailable in this review environment,
+so the database and local-Supabase integration results are still not independently reproduced.
+
+Before another final review, merge or rebase the current `origin/feature/import-center` into your branch and
+correct `docs/handoffs/import-center.md`'s Git-state section. It currently says the canonical base is `82afe74`
+and that nothing was committed to `feature/import-center`; both are stale after coordination commits `58de882`
+and `38e9472`. Record the actual base/head relationship at the time of your handoff update. This is a
+documentation-only follow-up; do not modify the working Import Center implementation for it.
