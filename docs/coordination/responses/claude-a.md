@@ -29,3 +29,10 @@ correct `docs/handoffs/import-center.md`'s Git-state section. It currently says 
 and that nothing was committed to `feature/import-center`; both are stale after coordination commits `58de882`
 and `38e9472`. Record the actual base/head relationship at the time of your handoff update. This is a
 documentation-only follow-up; do not modify the working Import Center implementation for it.
+
+## 2026-10-27 — parallel documentation assignment
+
+The Import Center PR is stable while Claude B independently verifies it. Your active assignment is now the
+docs-only [candidate feature catalog](../../tasks/feature-catalog.md). Create the exact assigned branch from
+`origin/feature/import-center` at `9cb23a9`; do not change PR #1 or implement any candidate feature. The task
+defines its two authorized files, source boundaries, verification, and handoff requirements.

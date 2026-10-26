@@ -7,7 +7,7 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Holding | [Import Center reference host](import-center.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Keep the branch stable while Claude B independently verifies the required local checks. Do not begin a new feature. |
+| Claude A | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog` from `origin/feature/import-center` at `9cb23a9` | Extract the 12 research candidates into a factual catalog. Keep PR #1 stable and do not implement a second feature. |
 | Claude B | Active | [Import Center independent verification](import-center-validation.md) | Read-only checkout of PR #1 head `a181b5e` | Reproduce the approved local verification plan and report exact outcomes on PR #1. Do not edit implementation files. |
 
 ## Assignment rules
