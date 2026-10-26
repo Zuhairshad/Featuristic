@@ -33,7 +33,7 @@ pnpm inspect:fixture
 To inspect another project after building the CLI:
 
 ```sh
-pnpm exec feature inspect /absolute/path/to/project
+node apps/cli/dist/main.js inspect /absolute/path/to/project
 ```
 
 The command emits JSON containing evidence and unknowns. It does not execute target-project code, read
