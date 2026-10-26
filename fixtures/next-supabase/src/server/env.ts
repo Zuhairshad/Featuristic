@@ -30,6 +30,19 @@ export function serviceEnv(): { url: string; serviceRoleKey: string } {
   };
 }
 
+function isLoopback(value: string): boolean {
+  try {
+    return ["127.0.0.1", "localhost", "::1", "[::1]"].includes(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+}
+
+/** Development-only controls require an explicit flag AND a loopback Supabase URL. */
+export function devControlsEnabled(): boolean {
+  return process.env.IMPORT_CENTER_DEV_CONTROLS === "true" && isLoopback(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "");
+}
+
 /** The worker endpoint is disabled unless a shared secret is configured. */
 export function workerSecret(): string | null {
   return process.env.IMPORT_WORKER_SECRET || null;

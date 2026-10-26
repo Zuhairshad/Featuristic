@@ -3,32 +3,17 @@ import { IMPORT_LIMITS } from "../../../../src/import-center/limits";
 import { uploadCsv } from "../../../../src/import-center/service";
 import { suggestPayloadKey } from "../../../../src/import-center/validation";
 import { isResponse, jsonError, requireAdmin, toErrorResponse } from "../../../../src/server/http";
-import {
-  BodyTooLargeError,
-  InvalidContentLengthError,
-  parseFormData,
-  readBodyWithLimit,
-} from "../../../../src/server/limited-body";
-
-/** File cap plus room for multipart framing. Enforced while streaming, before any multipart parsing. */
-const MAX_BODY_BYTES = IMPORT_LIMITS.maxFileBytes + 64 * 1024;
 
 export async function POST(request: Request) {
   try {
+    const declaredLength = Number(request.headers.get("content-length") ?? 0);
+    if (declaredLength > IMPORT_LIMITS.maxFileBytes + 64 * 1024) return jsonError(413, "The file is larger than the 5 MB limit.");
+
     // Authenticate before reading the body so anonymous callers cannot make us parse uploads.
     const initial = await requireAdmin();
     if (isResponse(initial)) return initial;
 
-    let form: FormData;
-    try {
-      form = await parseFormData(request, await readBodyWithLimit(request, MAX_BODY_BYTES));
-    } catch (error) {
-      if (error instanceof BodyTooLargeError) return jsonError(413, "The file is larger than the 5 MB limit.");
-      if (error instanceof InvalidContentLengthError || error instanceof TypeError) {
-        return jsonError(400, "Invalid upload request.");
-      }
-      throw error;
-    }
+    const form = await request.formData();
     const file = form.get("file");
     const requestedTenant = form.get("tenantId");
     const admin = typeof requestedTenant === "string" ? await requireAdmin(requestedTenant) : initial;
