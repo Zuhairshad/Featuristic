@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog` from `origin/feature/import-center` at `9cb23a9` | Extract the 12 research candidates into a factual catalog. Keep PR #1 stable and do not implement a second feature. |
-| Claude B | Active | [Import Center independent verification](import-center-validation.md) | Read-only checkout of PR #1 head `a181b5e` | Reproduce the approved local verification plan and report exact outcomes on PR #1. Do not edit implementation files. |
+| Claude A | Active | [Repair fixture inspection setup](inspect-fixture-setup.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Fix the verified first-run `pnpm inspect:fixture` failure, with a regression check. Pause the catalog task. |
+| Claude B | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog` from `origin/feature/import-center` at `1fee93a` | Extract the 12 research candidates into a factual catalog. Do not implement a second feature. |
 
 ## Assignment rules
 

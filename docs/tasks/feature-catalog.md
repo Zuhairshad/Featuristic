@@ -1,8 +1,8 @@
 # Candidate feature catalog
 
 - Status: Approved for documentation
-- Owner: Claude A
-- Branch: create `claude/feature-catalog` from `origin/feature/import-center` at `9cb23a9`
+- Owner: Claude B
+- Branch: create `claude/feature-catalog` from `origin/feature/import-center` at `1fee93a`
 
 ## Objective
 
