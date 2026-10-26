@@ -46,9 +46,9 @@ pnpm dev
 Seed accounts (local only, password `local-dev-password`): `admin-a@example.test` (admin of tenant A),
 `member-a@example.test` (non-admin member of A), `admin-b@example.test` (admin of tenant B).
 
-Nothing runs the worker automatically. Either use the **Run worker once** development control on an import
-page (shown only when `IMPORT_CENTER_DEV_CONTROLS=true` and the Supabase URL is loopback) or call the
-internally authenticated endpoint, which processes a bounded number of messages:
+Nothing runs the worker automatically. An operator calls the internally authenticated endpoint, which
+processes a bounded number of messages from the global queue with a service-role client. There is deliberately
+no worker control in the tenant UI: a user session must never be able to trigger privileged, cross-tenant work.
 
 ```sh
 curl -X POST -H "Authorization: Bearer $IMPORT_WORKER_SECRET" "http://localhost:3000/api/internal/import-worker?max=5"

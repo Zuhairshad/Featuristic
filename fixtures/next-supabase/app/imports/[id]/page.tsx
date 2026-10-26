@@ -3,9 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { AutoRefresh } from "../../../src/components/auto-refresh";
 import { Counts, ProgressBar, StatusBadge, isActive } from "../../../src/components/import-progress";
 import { getImport, listRowErrors } from "../../../src/import-center/service";
-import { devControlsEnabled } from "../../../src/server/env";
 import { getSessionState } from "../../../src/server/session";
-import { replayAction, runWorkerOnceAction } from "./actions";
+import { replayAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -54,8 +53,8 @@ export default async function ImportDetailPage({
         {row.error_summary && <p className="error">{row.error_summary}</p>}
         {row.status === "queued" && (
           <p className="muted">
-            Waiting for the background worker. Nothing in this host runs it automatically; start it with the
-            internal worker endpoint or the development control below.
+            Waiting for the background worker. Nothing in this host runs it automatically; an operator starts it
+            with the internally authenticated worker endpoint.
           </p>
         )}
         {replay === "unavailable" && <p className="error">This import cannot be replayed right now.</p>}
@@ -95,19 +94,6 @@ export default async function ImportDetailPage({
           </table>
           {skipped > errors.length && <p className="muted">Showing the first {errors.length}. Download for all.</p>}
         </>
-      )}
-
-      {devControlsEnabled() && isActive(row.status) && (
-        <div className="card">
-          <strong>Development control</strong>
-          <p className="muted">
-            Local only. Runs one bounded worker batch for whichever import is next in the queue.
-          </p>
-          <form action={runWorkerOnceAction}>
-            <input type="hidden" name="id" value={id} />
-            <button type="submit">Run worker once</button>
-          </form>
-        </div>
       )}
     </main>
   );

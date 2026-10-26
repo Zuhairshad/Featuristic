@@ -114,6 +114,23 @@ describe("previewRows", () => {
     expect(preview.issues[0]?.message).toContain("same as row 1");
   });
 
+  it("classifies every row of an already-stored key as duplicate_existing, like the database commit", () => {
+    const stored = new Set([buildDedupeKey(["old@example.test"])]);
+    const repeated = [
+      ["old@example.test", "Old", "free"],
+      ["OLD@example.test ", "Old again", "free"],
+      ["new@example.test", "New", "free"],
+      ["new@example.test", "New again", "free"],
+    ];
+    const preview = previewRows(headers, repeated, mapping, ["Email"], stored);
+    expect(preview).toMatchObject({ importableRows: 1, duplicateExistingRows: 2, duplicateInFileRows: 1 });
+    expect(preview.issues.map((issue) => [issue.rowNumber, issue.code])).toEqual([
+      [1, "duplicate_existing"],
+      [2, "duplicate_existing"],
+      [4, "duplicate_in_file"],
+    ]);
+  });
+
   it("truncates the issue list but not the counts", () => {
     const many = Array.from({ length: 10 }, () => ["", "x", "y"]);
     const preview = previewRows(headers, many, mapping, ["Email"], new Set(), { issueLimit: 3, sampleRows: 1 });

@@ -3,9 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ImportServiceError, replayImport } from "../../../src/import-center/service";
-import { devControlsEnabled } from "../../../src/server/env";
-import { runImportWorkerOnce } from "../../../src/server/run-worker";
-import { createSessionClient, getSessionState } from "../../../src/server/session";
+import { createSessionClient } from "../../../src/server/session";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -22,14 +20,4 @@ export async function replayAction(formData: FormData) {
   }
   revalidatePath(`/imports/${id}`);
   redirect(failed ? `/imports/${id}?replay=unavailable` : `/imports/${id}`);
-}
-
-/** Development-only: runs one bounded worker invocation for the signed-in admin. */
-export async function runWorkerOnceAction(formData: FormData) {
-  const id = String(formData.get("id") ?? "");
-  const state = await getSessionState();
-  if (state.kind !== "admin" || !devControlsEnabled()) redirect("/imports");
-  await runImportWorkerOnce(1);
-  revalidatePath(`/imports/${UUID.test(id) ? id : ""}`);
-  redirect(UUID.test(id) ? `/imports/${id}` : "/imports");
 }
