@@ -8,7 +8,7 @@ below is the authority for implementation scope; this board only assigns ownersh
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
 | Claude A | Paused | No assignment | User removed Claude A from the active workflow | Do not start or resume work until explicitly reassigned. |
-| Claude B | Active | [Webhook Developer Portal reference host](webhook-developer-portal-implementation.md) | New `claude/webhook-portal-implementation-b` → implementation PR | Sole owner of Feature 2; implement only the approved local-only task and stop on its gates. |
+| Claude B | Blocked | [Webhook Developer Portal reference host](webhook-developer-portal-implementation.md) | Awaiting `claude/webhook-portal-implementation-b` | The external Claude B session has not resumed or acknowledged the accepted task; resume it before work can continue. |
 
 ## Assignment rules
 
