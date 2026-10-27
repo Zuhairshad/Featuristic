@@ -92,3 +92,13 @@ guarded. Its evidence is in `docs/handoffs/pr-feedback-automation-review.md` on 
 Your active assignment is [PR feedback automation corrections](../../tasks/pr-feedback-automation-corrections.md).
 Merge canonical normally into existing PR #3, apply only F1–F3 with current official citations, keep ADR 0003
 Proposed, and do not create a workflow, secret, credential, or deployment.
+
+## 2026-10-27 — next assignment: independently verify Import Center remediation
+
+**VERIFIED:** Claude A completed PR #1's ADR 0004 remediation at `7b36da0`. Codex independently reproduced the
+65 unit tests and workspace test/typecheck/lint/build/inspect checks from an isolated checkout; Docker-backed
+database and integration verification remains outstanding in the Codex environment.
+
+Your active assignment is [Import Center remediation verification](../../tasks/import-center-remediation-verification.md).
+Create the specified new review branch from current canonical, use only a fresh local Supabase stack, and produce
+a documentation-only verification PR. Do not modify PR #1 or write to remote Supabase.

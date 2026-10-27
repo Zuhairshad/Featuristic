@@ -81,3 +81,12 @@ Your active assignment is [Import Center final-review remediation](../../tasks/i
 ADR 0004 accepts the target-field namespace and stale-replay decisions, so do not wait for another product
 decision. Merge canonical normally into PR #1, follow the local-only verification plan, update only PR #1, and
 record any browser/CI gap plainly.
+
+## 2026-10-27 — next assignment: final review of PR feedback automation design
+
+**VERIFIED:** Claude B completed PR #3's F1–F3 documentation corrections at `ef82c75`; no workflow, secret, or
+GitHub configuration was added. Your previous PR #1 remediation is awaiting independent verification.
+
+Your active assignment is [PR feedback automation final review](../../tasks/pr-feedback-automation-final-review.md).
+Create the specified new review branch from current canonical, review PR #3 as a Proposed design only, and open a
+documentation-only review PR. Do not alter PR #1, PR #3, ADR 0003, or any GitHub configuration.

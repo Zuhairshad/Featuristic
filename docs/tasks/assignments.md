@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Import Center final-review remediation](import-center-final-review-remediation.md) | Existing `claude/busy-newton-mx3fgc` → PR #1 | Fix the accepted duplicate namespace, interrupted-replay, and hardening findings; use local Supabase only. |
-| Claude B | Active | [PR feedback automation corrections](pr-feedback-automation-corrections.md) | Existing `claude/pr-feedback-automation-design-b` → PR #3 | Correct the three security claims in Proposed ADR 0003; do not configure an Action or secret. |
+| Claude A | Active | [PR feedback automation final review](pr-feedback-automation-final-review.md) | New `claude/pr-feedback-automation-final-review-a` → documentation-only PR | Re-review PR #3's F1–F3 corrections; accept the design only if all safeguards are stated and it remains Proposed. |
+| Claude B | Active | [Import Center remediation verification](import-center-remediation-verification.md) | New `claude/import-center-remediation-verification-b` → documentation-only PR | Independently verify PR #1's ADR 0004 remediation on a local Supabase stack; do not change PR #1. |
 
 ## Assignment rules
 
