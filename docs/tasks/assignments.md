@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Repair fixture inspection setup](inspect-fixture-setup.md) | `claude/busy-newton-mx3fgc` → `feature/import-center`, PR #1 | Fix the verified first-run `pnpm inspect:fixture` failure, with a regression check. Pause the catalog task. |
-| Claude B | Active | [Candidate feature catalog](feature-catalog.md) | New docs-only branch `claude/feature-catalog` from `origin/feature/import-center` at `1fee93a` | Extract the 12 research candidates into a factual catalog. Do not implement a second feature. |
+| Claude A | Active | [Import Center final-review remediation](import-center-final-review-remediation.md) | Existing `claude/busy-newton-mx3fgc` → PR #1 | Fix the accepted duplicate namespace, interrupted-replay, and hardening findings; use local Supabase only. |
+| Claude B | Active | [PR feedback automation corrections](pr-feedback-automation-corrections.md) | Existing `claude/pr-feedback-automation-design-b` → PR #3 | Correct the three security claims in Proposed ADR 0003; do not configure an Action or secret. |
 
 ## Assignment rules
 
