@@ -8,6 +8,14 @@ Claude B owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 10:50 PKT — PR #11 corrections F1 and F2 applied
+
+Status: the two PR #13 findings are applied to the dossier on the same PR,
+https://github.com/Zuhairshad/Featuristic/pull/11 (canonical `8345d77` merged normally first, `9c0a2f1`). F1: section 5 now
+lists `endpoint-storage shape` as unresolved. F2: section 9 now says notices were collected in section 11 as evidence
+only and the license terms were not reviewed or interpreted. Nothing else in the dossier changed; the human legal-review
+gate and all other unresolved items are untouched. Optional notes O1 and O2 were not applied. No open question.
+
 ## 2026-10-27 09:15 PKT — Webhook source-license provenance added to PR #11
 
 Status: factual publisher and repository license notices are appended to the dossier on the same PR,

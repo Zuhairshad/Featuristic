@@ -123,3 +123,44 @@ unresolved.
 The final comparison is checked after committing with `git diff --check origin/feature/import-center...HEAD` and
 `git diff --name-only origin/feature/import-center...HEAD`; the results are in the PR description. No GitHub review
 comment was posted, and PR #10, PR #1 and the other PR branches were not touched.
+
+## Review follow-up (PR #13 findings F1 and F2)
+
+Task: [`docs/tasks/webhook-developer-portal-source-dossier-corrections.md`](../tasks/webhook-developer-portal-source-dossier-corrections.md).
+Review: PR #13, `docs/handoffs/webhook-developer-portal-source-dossier-review.md` on
+`claude/webhook-portal-source-dossier-review-a` (head `eda72952006893cca7ef4082d1945d00a300a65b`), which reviewed this PR
+at head `478183235bda5cdbbcacfb40049f9c45e361a67f`. These are documentation-consistency corrections only. They do not
+approve a Webhook Developer Portal ADR, implementation, architecture, or legal conclusion, and the human legal-review
+gate and every other unresolved decision are unchanged.
+
+| Item | Value |
+| --- | --- |
+| Head before this follow-up | `478183235bda5cdbbcacfb40049f9c45e361a67f` |
+| Canonical merged first | `origin/feature/import-center` at `8345d77b1f46fbe8fd71a9a3fc3b16922de9d77a` |
+| Merge commit | `9c0a2f1aabcabe2a266722ad5fa0650958b9eeab` (normal two-parent merge; no conflicts; no rebase or force-push) |
+
+The PR head is the merge commit plus the follow-up commit that applies the two corrections and adds this note. A
+file cannot contain its own hash, so read the final head from `git log -1` or the PR.
+
+| Finding | Correction in `docs/evidence/webhook-developer-portal-source-dossier.md` |
+| --- | --- |
+| F1 | Section 5's "Also unresolved" sentence now includes `the endpoint-storage shape`, inserted before "the event-source data model", as the review suggested. It is a distinct item from "endpoint ownership", which stays in the table. |
+| F2 | The first sentence of section 9 now says that publisher and repository license notices were collected in section 11 as factual evidence only, and that the license terms themselves were **not reviewed or interpreted** in this task. The rest of section 9, including the statement that the research record's source and license gate is not satisfied and that an ADR-stage license review is required, is unchanged. Section 11's description of what it replaces is now accurate. |
+
+The review's optional notes O1 and O2 were **not applied**: the task limits changes to F1 and F2, and O1 (upgrading
+"Source" access rows because the hosts resolved from the reviewer's environment) would change an access claim that was
+true of this environment. No other dossier assertion, source URL, or license notice was changed.
+
+### Commands run and observed results (before committing)
+
+| Command | Result |
+| --- | --- |
+| `git merge --no-ff origin/feature/import-center` | Exit 0, merge commit `9c0a2f1`, no conflicts. |
+| `git diff --name-only origin/feature/import-center...HEAD` after the merge | `docs/coordination/questions/claude-b.md`, `docs/evidence/webhook-developer-portal-source-dossier.md`, `docs/handoffs/webhook-developer-portal-source-dossier.md`. |
+| `git diff --stat` after the two edits | `docs/evidence/webhook-developer-portal-source-dossier.md`: 5 insertions, 4 deletions (the two corrected sentences only). |
+| `git diff --check` | Exit 0, no whitespace errors. |
+
+The final comparison is checked after committing with `git diff --check origin/feature/import-center...HEAD`; the
+result is in the final report for this task. No GitHub review comment was posted, and PR #13 and every other PR were
+not modified. Limits are unchanged: nothing was executed, and the sources, access levels, and license evidence in the
+dossier are as recorded above.

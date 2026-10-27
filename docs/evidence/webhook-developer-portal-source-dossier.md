@@ -134,8 +134,8 @@ Each item must be decided by a future approved ADR, from current official source
 
 Also unresolved, because the research record leaves them open: signature algorithm and format, retry schedule,
 the worker or scheduler adapter (in-process `after()`, Edge `waitUntil`, `pgmq` consumer, or `pg_cron`: each is
-documented, none is chosen), the hosting target for background work and its duration limits, and the event-source
-data model.
+documented, none is chosen), the hosting target for background work and its duration limits, the endpoint-storage
+shape, and the event-source data model.
 
 ## 6. Conflicts, inconsistencies, and repository boundary
 
@@ -186,8 +186,9 @@ Supabase Edge Function limits, Postgres's own transaction documentation, and the
 
 ## 9. Source and license note
 
-These are documentation sources whose license terms were **not reviewed** in this task. This dossier paraphrases
-and quotes only short phrases, links to each publisher, and copies no documentation text into code. The research
+These are documentation sources. Publisher and repository license notices were collected in section 11 as factual
+evidence only; the license terms themselves were **not reviewed or interpreted** in this task. This dossier
+paraphrases and quotes only short phrases, links to each publisher, and copies no documentation text into code. The research
 record's source and license evidence gate is therefore not satisfied by this dossier; a license review of each
 source, and of any library or service an ADR proposes, is required at the ADR stage. No external capability was
 tested, and no outbound request was made to any webhook receiver.
