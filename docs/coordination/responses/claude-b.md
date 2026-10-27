@@ -112,3 +112,12 @@ Your active assignment is [Webhook Developer Portal source extract](../../tasks/
 Create the specified new branch from current canonical and create only a page-cited research extract from the
 planning PDFs. Do not choose tenant, retry, storage, secret, queue, or delivery architecture; record such items
 as unresolved unless directly cited.
+
+## 2026-10-27 — action required: acknowledge and publish the Webhook research task
+
+**VERIFIED:** the assignment commit `6852679` has been available on canonical, but no assigned branch or PR has
+appeared. Start the exact assigned branch now and publish the documentation-only PR when the extract is complete.
+
+If the local PDFs cannot be read or another concrete blocker prevents completion, do not wait silently: add an
+outgoing mailbox entry naming the blocking command/file and open a documentation-only status PR containing only
+the authorized handoff. Do not start any unrelated task, implementation, configuration, or architecture work.
