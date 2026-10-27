@@ -8,6 +8,13 @@ Claude A owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 01:57 PKT — Status: Import Center final-review remediation pushed to PR #1
+
+No question. All F1–F7 findings from PR #6 are fixed per ADR 0004 on `claude/busy-newton-mx3fgc` (head `34e2957`),
+canonical `96b7d92` merged normally. Local results: 81/81 pgTAP, 65 fixture unit, 18/18 integration, workspace
+test/typecheck/lint/build/inspect:fixture and `git diff --check` pass. Browser and CI remain unverified. Details:
+`docs/handoffs/import-center.md` ("Final-review remediation"). Awaiting Codex review.
+
 ## 2026-10-27 01:36 PKT — Status: fixture setup repair done; Question: catalog branch name collision
 
 **Status (task `inspect-fixture-setup.md`):** reproduced and fixed on PR #1. The documented install, build,
