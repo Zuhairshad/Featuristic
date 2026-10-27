@@ -20,13 +20,13 @@ describe("buildErrorCsv", () => {
       { row_number: 7, code: "duplicate_existing", message: "Duplicate key", row_values: { Email: "=HYPERLINK()" } },
     ]);
     const parsed = parseCsv(text);
-    expect(parsed.headers).toEqual(["row_number", "error_code", "error_message", "row_values"]);
+    expect(parsed.headers).toEqual(["data_row_number", "error_code", "error_message", "row_values"]);
     expect(parsed.rows[0]?.slice(0, 3)).toEqual(["2", "missing_key", 'Key column "Email" is empty.']);
     expect(JSON.parse(parsed.rows[0]?.[3] ?? "")).toEqual({ Email: "", Name: "Ann, B." });
     expect(parsed.rows[1]?.[3]).toContain("=HYPERLINK()");
   });
 
   it("emits only the header when there are no errors", () => {
-    expect(buildErrorCsv([])).toBe("row_number,error_code,error_message,row_values\r\n");
+    expect(buildErrorCsv([])).toBe("data_row_number,error_code,error_message,row_values\r\n");
   });
 });

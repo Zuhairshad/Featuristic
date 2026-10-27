@@ -48,10 +48,12 @@ export async function getSessionState(requestedTenantId?: string | null): Promis
     .from("tenant_members")
     .select("tenant_id, role, tenants(name)")
     .eq("user_id", data.user.id)
-    .eq("role", "admin");
+    .eq("role", "admin")
+    .order("tenant_id", { ascending: true });
 
   const admin = (memberships ?? []) as unknown as { tenant_id: string; tenants: { name: string } | null }[];
-  const chosen = admin.find((row) => row.tenant_id === requestedTenantId) ?? admin[0];
+  // A named tenant the caller does not administer is denied, never replaced by another tenant.
+  const chosen = requestedTenantId ? admin.find((row) => row.tenant_id === requestedTenantId) : admin[0];
   if (!chosen) return { kind: "not-admin", email: data.user.email };
 
   return {

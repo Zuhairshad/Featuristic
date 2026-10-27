@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AutoRefresh } from "../../../src/components/auto-refresh";
 import { Counts, ProgressBar, StatusBadge, isActive } from "../../../src/components/import-progress";
-import { getImport, listRowErrors } from "../../../src/import-center/service";
+import { canReplayImport, getImport, listRowErrors } from "../../../src/import-center/service";
 import { getSessionState } from "../../../src/server/session";
 import { replayAction } from "./actions";
 
@@ -32,7 +32,8 @@ export default async function ImportDetailPage({
 
   const errors = (await listRowErrors(state.client, id)).slice(0, ERROR_PREVIEW_ROWS);
   const skipped = row.duplicate_count + row.invalid_count;
-  const canReplay = row.status === "failed";
+  const canReplay = canReplayImport(row, new Date());
+  const interrupted = canReplay && row.status !== "failed";
 
   return (
     <main>
@@ -51,7 +52,13 @@ export default async function ImportDetailPage({
           <Counts row={row} />
         </p>
         {row.error_summary && <p className="error">{row.error_summary}</p>}
-        {row.status === "queued" && (
+        {interrupted && (
+          <p className="error">
+            No progress for over 5 minutes, so processing appears interrupted. Replaying resumes from the last saved
+            row without duplicating records.
+          </p>
+        )}
+        {row.status === "queued" && !interrupted && (
           <p className="muted">
             Waiting for the background worker. Nothing in this host runs it automatically; an operator starts it
             with the secret-protected worker endpoint described in the fixture README.
@@ -79,7 +86,7 @@ export default async function ImportDetailPage({
           <table>
             <thead>
               <tr>
-                <th>Row</th>
+                <th title="Data row number: the header is not counted and blank lines are ignored">Data row</th>
                 <th>Problem</th>
               </tr>
             </thead>

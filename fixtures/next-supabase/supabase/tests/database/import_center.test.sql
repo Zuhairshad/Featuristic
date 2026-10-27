@@ -4,7 +4,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(73);
+select plan(81);
 
 -- Fixed identities from seed.sql
 --   admin A  11111111-0000-4000-8000-00000000000a  (tenant A admin)
@@ -249,6 +249,55 @@ select results_eq(
 select is(
   public.commit_import_batch('a0000000-0000-4000-8000-0000000000c1', 1, 4, 5, '[]', '[]', now()),
   'stale', 'commits after completion are no-ops');
+
+-- ----- ADR 0004: target-field-namespaced keys and stale-import replay -----
+reset role;
+insert into storage.objects (bucket_id, name) values
+  ('import-uploads', 'aaaaaaaa-0000-4000-8000-000000000001/ns.csv'),
+  ('import-uploads', 'aaaaaaaa-0000-4000-8000-000000000001/stale.csv');
+insert into public.imports (id, tenant_id, created_by, file_name, storage_path, file_sha256, header, mapping,
+                            key_columns, batch_size, total_rows, status)
+values ('a0000000-0000-4000-8000-0000000000c2', 'aaaaaaaa-0000-4000-8000-000000000001', '11111111-0000-4000-8000-00000000000a',
+        'ns.csv', 'aaaaaaaa-0000-4000-8000-000000000001/ns.csv', repeat('f', 64),
+        '["email","username"]', '{"email":"email","username":"username"}', '{email}', 10, 2, 'queued'),
+       ('a0000000-0000-4000-8000-0000000000c3', 'aaaaaaaa-0000-4000-8000-000000000001', '11111111-0000-4000-8000-00000000000a',
+        'stale.csv', 'aaaaaaaa-0000-4000-8000-000000000001/stale.csv', repeat('1', 64),
+        '["email"]', '{"email":"email"}', '{email}', 10, 300, 'running');
+
+select is(
+  public.commit_import_batch('a0000000-0000-4000-8000-0000000000c2', 1, 0, 2,
+    '[{"row_number":1,"dedupe_key":"[[\"email\",\"same@example.test\"]]","payload":{"email":"same@example.test"},"values":{}},
+      {"row_number":2,"dedupe_key":"[[\"username\",\"same@example.test\"]]","payload":{"username":"same@example.test"},"values":{}}]'::jsonb,
+    '[]'::jsonb, now()),
+  'committed', 'same value under two target fields commits');
+select is((select count(*)::int from public.import_records where import_id = 'a0000000-0000-4000-8000-0000000000c2'), 2,
+  'both records import when only the value matches');
+select is((select count(*)::int from public.import_row_errors where import_id = 'a0000000-0000-4000-8000-0000000000c2'), 0,
+  'a different target field is not a duplicate');
+
+select pg_temp.as_user('11111111-0000-4000-8000-00000000000a');
+select throws_ok($$select public.replay_import('a0000000-0000-4000-8000-0000000000c3')$$, 'P0001', 'import_not_replayable',
+  'a running import with a fresh heartbeat cannot be replayed');
+reset role;
+update public.imports set heartbeat_at = now() - interval '6 minutes', cursor = 100, imported_count = 100
+where id = 'a0000000-0000-4000-8000-0000000000c3';
+select pg_temp.as_user('11111111-0000-4000-8000-00000000000a');
+select lives_ok($$select public.replay_import('a0000000-0000-4000-8000-0000000000c3')$$,
+  'admin can replay a running import whose heartbeat is stale');
+select results_eq(
+  $$select run_id, cursor, status from public.imports where id = 'a0000000-0000-4000-8000-0000000000c3'$$,
+  $$values (2, 100, 'queued')$$, 'stale replay bumps the run id, keeps the cursor and re-queues');
+reset role;
+select is((select count(*)::int from pgmq.q_import_center_jobs
+           where (message ->> 'import_id') = 'a0000000-0000-4000-8000-0000000000c3'
+             and (message ->> 'run_id') = '2' and (message ->> 'cursor') = '100'), 1,
+  'a replay message is enqueued at the persisted cursor');
+update public.imports set status = 'queued', heartbeat_at = now() - interval '6 minutes'
+where id = 'a0000000-0000-4000-8000-0000000000c3';
+select pg_temp.as_user('11111111-0000-4000-8000-00000000000a');
+select lives_ok($$select public.replay_import('a0000000-0000-4000-8000-0000000000c3')$$,
+  'a stale queued import can be replayed too');
+reset role;
 
 select * from finish();
 rollback;

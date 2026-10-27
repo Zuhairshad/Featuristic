@@ -84,9 +84,15 @@ export function normalizeKeyPart(value: string): string {
   return value.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-/** Tenant scoping is applied by the database; this string is the per-tenant identity of a row. */
-export function buildDedupeKey(parts: string[]): string {
-  return JSON.stringify(parts.map(normalizeKeyPart));
+/**
+ * Tenant scoping is applied by the database; this string is the per-tenant identity of a row. It is
+ * namespaced by mapped target-field name (ADR 0004): pairs are sorted by field name, so mapping order
+ * does not change the key and imports that select different target fields never collide.
+ */
+export function buildDedupeKey(parts: ReadonlyArray<readonly [targetField: string, value: string]>): string {
+  const pairs = parts.map(([field, value]) => [field, normalizeKeyPart(value)] as const);
+  pairs.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  return JSON.stringify(pairs);
 }
 
 export type ValidatedRows = { valid: ValidRow[]; invalid: RowIssue[] };
@@ -150,7 +156,8 @@ export function validateRows(
       const column = headerIndex.get(header);
       payload[key] = column === undefined ? "" : (cells[column] ?? "").trim();
     }
-    valid.push({ rowNumber, dedupeKey: buildDedupeKey(keyParts), payload, values });
+    const namedKey = keyColumns.map((column, position) => [mapping[column] ?? column, keyParts[position] ?? ""] as const);
+    valid.push({ rowNumber, dedupeKey: buildDedupeKey(namedKey), payload, values });
   }
 
   return { valid, invalid };

@@ -194,7 +194,7 @@ export function ImportWizard({ tenantId }: { tenantId: string }) {
             <table>
               <thead>
                 <tr>
-                  <th>Row</th>
+                  <th title="Data row number: the header is not counted and blank lines are ignored">Data row</th>
                   <th>Problem</th>
                 </tr>
               </thead>

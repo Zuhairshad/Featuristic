@@ -30,7 +30,10 @@ export function serviceEnv(): { url: string; serviceRoleKey: string } {
   };
 }
 
-/** The worker endpoint is disabled unless a shared secret is configured. */
+export const MIN_WORKER_SECRET_LENGTH = 32;
+
+/** The worker endpoint is disabled unless a shared secret of at least 32 characters is configured. */
 export function workerSecret(): string | null {
-  return process.env.IMPORT_WORKER_SECRET || null;
+  const secret = process.env.IMPORT_WORKER_SECRET;
+  return secret && secret.length >= MIN_WORKER_SECRET_LENGTH ? secret : null;
 }

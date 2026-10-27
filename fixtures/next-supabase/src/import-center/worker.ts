@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { CsvFormatError, parseCsv } from "./csv";
-import { type Mapping, validateRows } from "./validation";
+import { type Mapping, validateMapping, validateRows } from "./validation";
 
 /** Persisted import row, as far as the worker needs it. */
 export type WorkerImport = {
@@ -82,6 +82,7 @@ export const SAFE_SUMMARIES = {
   storage: "The uploaded file could not be read from storage; retrying automatically.",
   exhausted: "Processing stopped after repeated failures. Replay the import to resume from the last saved row.",
   fileChanged: "The uploaded file no longer matches the file that was validated. Start a new import.",
+  invalidMapping: "The saved column mapping is not valid. Start a new import.",
 } as const;
 
 /**
@@ -130,8 +131,10 @@ export async function processNextMessage(options: WorkerOptions): Promise<WorkOu
   }
 
   if (message.readCount > maxAttempts) {
-    await store.archive(message.msgId);
+    // Record the failure first: a crash between the two steps then leaves a redeliverable message that
+    // the run/cursor guard turns into a no-op, instead of a stale import with no message (ADR 0004).
     await store.failImport(payload.importId, payload.runId, SAFE_SUMMARIES.exhausted, now());
+    await store.archive(message.msgId);
     return { kind: "failed", importId: payload.importId, summary: SAFE_SUMMARIES.exhausted };
   }
 
@@ -146,7 +149,11 @@ export async function processNextMessage(options: WorkerOptions): Promise<WorkOu
     return { kind: "stale", importId: payload.importId };
   }
 
+  let committedOutcome: WorkOutcome;
   try {
+    const mappingProblems = validateMapping(record.header, record.mapping, record.key_columns);
+    if (mappingProblems.length > 0) throw new PermanentImportError(SAFE_SUMMARIES.invalidMapping);
+
     const nextCursor = Math.min(record.cursor + record.batch_size, record.total_rows);
     const bytes = await readUpload(store, record);
     const parsed = parseUpload(bytes, record);
@@ -189,17 +196,17 @@ export async function processNextMessage(options: WorkerOptions): Promise<WorkOu
     });
 
     if (result === "committed") await hooks?.afterCommit?.(context);
-    await store.ack(message.msgId);
 
-    return result === "committed"
-      ? { kind: "committed", importId: record.id, cursor: nextCursor, done: nextCursor >= record.total_rows }
-      : { kind: "stale", importId: record.id };
+    committedOutcome =
+      result === "committed"
+        ? { kind: "committed", importId: record.id, cursor: nextCursor, done: nextCursor >= record.total_rows }
+        : { kind: "stale", importId: record.id };
   } catch (error) {
     if (error instanceof SimulatedCrash) throw error;
     if (error instanceof PermanentImportError || error instanceof CsvFormatError) {
       const summary = error instanceof PermanentImportError ? error.summary : error.message;
-      await store.archive(message.msgId);
       await store.failImport(record.id, record.run_id, summary, now());
+      await store.archive(message.msgId);
       return { kind: "failed", importId: record.id, summary };
     }
     // Retryable. Only a fixed, sanitized summary is persisted; raw error text may contain row data.
@@ -207,6 +214,15 @@ export async function processNextMessage(options: WorkerOptions): Promise<WorkOu
     await store.recordAttemptFailure(record.id, record.run_id, summary);
     return { kind: "retry", importId: record.id, summary };
   }
+
+  // The batch is already committed (or was stale). A failed acknowledgement is not a batch failure: the
+  // message is redelivered after its visibility timeout and discarded as stale, so nothing is recorded.
+  try {
+    await store.ack(message.msgId);
+  } catch {
+    // Intentionally ignored; see above.
+  }
+  return committedOutcome;
 }
 
 /** Processes up to `maxMessages` messages, stopping early when the queue is idle. Always bounded. */

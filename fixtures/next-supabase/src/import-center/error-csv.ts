@@ -15,7 +15,7 @@ export function csvCell(value: string): string {
 
 /** Builds the downloadable row-error file: one line per rejected row, original values as JSON. */
 export function buildErrorCsv(errors: ErrorCsvRow[]): string {
-  const lines = [["row_number", "error_code", "error_message", "row_values"].join(",")];
+  const lines = [["data_row_number", "error_code", "error_message", "row_values"].join(",")];
   for (const error of errors) {
     lines.push(
       [

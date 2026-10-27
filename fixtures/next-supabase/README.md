@@ -22,8 +22,8 @@ table (`tenant_id`, `dedupe_key`, JSON `payload`); it is not a generic host-tabl
 | --- | --- |
 | Who | Supabase Auth user who is an `admin` in `tenant_members`. Members and other tenants get nothing. Authority always comes from `auth.uid()` and membership, never from a client-supplied tenant or role. |
 | Limits | CSV only, 5 MB, 10,000 data rows, 100 columns, 10,000 characters per cell, batches of 100 rows. Request bodies are capped while they are read (upload 5 MB plus multipart framing, JSON 64 KB), so a missing or forged `Content-Length` cannot make the server buffer more. |
-| Row numbers | 1-based among data rows; the header is not counted. |
-| Duplicate key | The admin picks one or more mapped key columns. Each value is NFKC-normalized, trimmed, whitespace-collapsed and lowercased; the key is the JSON array of those values, unique per tenant. |
+| Row numbers | 1-based **data-row** numbers: the header is not counted and blank lines are ignored, so a number can differ from the line number in the file. The UI and the error CSV (`data_row_number`) label them as data rows. |
+| Duplicate key | The admin picks one or more mapped key columns. Each value is NFKC-normalized, trimmed, whitespace-collapsed and lowercased; the key is the JSON array of `[targetField, value]` pairs sorted by target-field name (ADR 0004), unique per tenant. Imports that key on different target fields never collide. |
 | Duplicate rows | The first writer of a key wins. If the key is already stored by any earlier import, **every** file row with it is `duplicate_existing`. Otherwise the first file row imports and later ones are `duplicate_in_file`. Duplicates are **skipped**, persisted as row errors, and never overwrite stored data. The preview applies the same rule, so its codes and counts match what is persisted. |
 | Invalid rows | Wrong column count, empty key, or over-long cell: skipped and persisted as row errors. The import still completes. |
 | Retries | A failed batch becomes visible again after the queue visibility timeout (30 s). After 3 failed deliveries the message is archived and the import is marked `failed`. Only a fixed, sanitized summary is stored; raw errors and row data are never put in `error_summary`. |
@@ -54,7 +54,7 @@ tenant's import. Only an operator holding `IMPORT_WORKER_SECRET` can start it, t
 curl -X POST -H "Authorization: Bearer $IMPORT_WORKER_SECRET" "http://localhost:3000/api/internal/import-worker?max=5"
 ```
 
-The endpoint is disabled when `IMPORT_WORKER_SECRET` is unset. An import stays `Queued` until an operator runs it.
+The endpoint is disabled when `IMPORT_WORKER_SECRET` is unset or shorter than 32 characters. An import stays `Queued` until an operator runs it.
 
 ## Verification commands
 

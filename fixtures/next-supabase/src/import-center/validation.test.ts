@@ -42,11 +42,18 @@ describe("duplicate keys", () => {
   it("normalizes case, whitespace, and Unicode compatibility forms", () => {
     expect(normalizeKeyPart("  Jane   DOE ")).toBe("jane doe");
     expect(normalizeKeyPart("ＡＢＣ")).toBe("abc");
-    expect(buildDedupeKey(["A@Example.test ", "x"])).toBe(buildDedupeKey(["a@example.TEST", " X "]));
+    expect(buildDedupeKey([["email", "A@Example.test "], ["org", "x"]])).toBe(
+      buildDedupeKey([["email", "a@example.TEST"], ["org", " X "]]),
+    );
   });
 
   it("keeps composite keys unambiguous", () => {
-    expect(buildDedupeKey(["a", "b c"])).not.toBe(buildDedupeKey(["a b", "c"]));
+    expect(buildDedupeKey([["a", "a"], ["b", "b c"]])).not.toBe(buildDedupeKey([["a", "a b"], ["b", "c"]]));
+  });
+
+  it("namespaces the key by target field and ignores mapping order", () => {
+    expect(buildDedupeKey([["email", "x@example.test"]])).not.toBe(buildDedupeKey([["username", "x@example.test"]]));
+    expect(buildDedupeKey([["a", "1"], ["b", "2"]])).toBe(buildDedupeKey([["b", "2"], ["a", "1"]]));
   });
 });
 
@@ -97,7 +104,7 @@ describe("previewRows", () => {
   ];
 
   it("counts importable, invalid, and both duplicate kinds and explains each", () => {
-    const preview = previewRows(headers, rows, mapping, ["Email"], new Set([buildDedupeKey(["old@example.test"])]));
+    const preview = previewRows(headers, rows, mapping, ["Email"], new Set([buildDedupeKey([["email", "old@example.test"]])]));
     expect(preview).toMatchObject({
       totalRows: 5,
       importableRows: 2,
@@ -115,7 +122,7 @@ describe("previewRows", () => {
   });
 
   it("classifies every file row whose key is already stored as duplicate_existing, matching the database", () => {
-    const stored = new Set([buildDedupeKey(["shared@example.test"])]);
+    const stored = new Set([buildDedupeKey([["email", "shared@example.test"]])]);
     const sharedRows = [
       ["shared@example.test", "First", "pro"],
       ["SHARED@example.test", "Second", "pro"],
@@ -137,5 +144,22 @@ describe("previewRows", () => {
     expect(preview.invalidRows).toBe(10);
     expect(preview.issues).toHaveLength(3);
     expect(preview.issuesTruncated).toBe(true);
+  });
+});
+
+describe("namespaced duplicate keys in validateRows", () => {
+  it("gives the same value under different target fields different keys", () => {
+    const rows = [["same@example.test", "same@example.test", "pro"]];
+    const byEmail = validateRows(["Email", "Username", "Plan"], rows, { Email: "email", Username: "username", Plan: "plan" }, ["Email"]);
+    const byUsername = validateRows(["Email", "Username", "Plan"], rows, { Email: "email", Username: "username", Plan: "plan" }, ["Username"]);
+    expect(byEmail.valid[0]?.dedupeKey).not.toBe(byUsername.valid[0]?.dedupeKey);
+  });
+
+  it("does not depend on key column selection order", () => {
+    const rows = [["a", "b", "c"]];
+    const m = { A: "a", B: "b", C: "c" };
+    const ab = validateRows(["A", "B", "C"], rows, m, ["A", "B"]);
+    const ba = validateRows(["A", "B", "C"], rows, m, ["B", "A"]);
+    expect(ab.valid[0]?.dedupeKey).toBe(ba.valid[0]?.dedupeKey);
   });
 });

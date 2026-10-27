@@ -10,6 +10,7 @@ import {
   getImport,
   listImports,
   listRowErrors,
+  canReplayImport,
   previewImport,
   replayImport,
   startImport,
@@ -179,7 +180,7 @@ describe("valid import with progress, bounded batches, and error file", () => {
       [250, "column_count_mismatch"],
     ]);
     const errorCsv = buildErrorCsv(errors);
-    expect(errorCsv.split("\r\n")[0]).toBe("row_number,error_code,error_message,row_values");
+    expect(errorCsv.split("\r\n")[0]).toBe("data_row_number,error_code,error_message,row_values");
     expect(errorCsv).toContain("duplicate_in_file");
   });
 
@@ -339,6 +340,54 @@ describe("interruption, retry, and resume", () => {
     expect(await summary(adminA, id)).toMatchObject({ status: "completed", run_id: 1 });
   });
 
+  it("imports both records when different target fields hold the same normalized value (ADR 0004)", async () => {
+    const shared = `${tag}-shared@example.test`;
+    const first = await createImport(adminA, csv([[shared, "By email"]]));
+
+    const header = ["Email", "Username"];
+    const upload = await uploadCsv(adminA, TENANT_A, csv([[`${tag}-other@example.test`, shared.toUpperCase()]], header));
+    createdPaths.push(upload.path);
+    const request = {
+      tenantId: TENANT_A,
+      path: upload.path,
+      mapping: { Email: "email", Username: "username" },
+      keyColumns: ["Username"],
+    };
+    const preview = await previewImport(adminA, request);
+    expect(preview).toMatchObject({ importableRows: 1, duplicateExistingRows: 0, duplicateInFileRows: 0 });
+
+    const second = await startImport(adminA, { ...request, fileName: "by-username.csv" });
+    createdImports.push(second);
+    await runWorker(workerOptions(), 5);
+
+    expect(await summary(adminA, first)).toMatchObject({ imported_count: 1, duplicate_count: 0 });
+    expect(await summary(adminA, second)).toMatchObject({ status: "completed", imported_count: 1, duplicate_count: 0 });
+    expect(await recordCount(second)).toBe(1);
+  });
+
+  it("lets an admin replay an import whose queue message was lost, without duplicating records", async () => {
+    const id = await createImport(adminA, csv(makeRows(250)));
+    expect((await processNextMessage(workerOptions())).kind).toBe("committed"); // rows 1-100
+    await pg.query("delete from pgmq.q_import_center_jobs"); // the continuation message is lost
+
+    // Fresh heartbeat: still considered in progress, so neither the UI rule nor the database offers replay.
+    expect(canReplayImport(await summary(adminA, id), new Date())).toBe(false);
+    await expect(replayImport(adminA, id)).rejects.toMatchObject({ code: "replay_failed" });
+
+    await pg.query("update public.imports set heartbeat_at = now() - interval '6 minutes' where id = $1", [id]);
+    const stale = await summary(adminA, id);
+    expect(stale.status).toBe("running");
+    expect(canReplayImport(stale, new Date())).toBe(true);
+
+    await expect(replayImport(adminB, id)).rejects.toMatchObject({ code: "not_found" });
+    await replayImport(adminA, id);
+    expect(await summary(adminA, id)).toMatchObject({ status: "queued", run_id: 2, cursor: 100 });
+
+    await runWorker(workerOptions(), 10);
+    expect(await summary(adminA, id)).toMatchObject({ status: "completed", imported_count: 250, duplicate_count: 0 });
+    expect(await recordCount(id)).toBe(250);
+  });
+
   it("fails permanently when the stored file no longer matches the validated checksum", async () => {
     const bytes = csv(makeRows(3));
     const upload = await uploadCsv(adminA, TENANT_A, bytes);
@@ -418,7 +467,7 @@ describe("tenant and role isolation", () => {
 });
 
 describe("worker invocation is operator-only (cross-tenant write regression)", () => {
-  const SECRET = "integration-operator-secret";
+  const SECRET = "integration-operator-secret-0123456789abcdef";
   const saved: Record<string, string | undefined> = {};
   const envKeys = ["IMPORT_WORKER_SECRET", "NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
 

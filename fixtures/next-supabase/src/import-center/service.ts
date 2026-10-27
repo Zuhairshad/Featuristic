@@ -41,12 +41,13 @@ export type ImportSummary = {
   invalid_count: number;
   error_summary: string | null;
   run_id: number;
+  heartbeat_at: string;
   created_at: string;
   completed_at: string | null;
 };
 
 export const IMPORT_SUMMARY_COLUMNS =
-  "id,file_name,status,total_rows,cursor,imported_count,duplicate_count,invalid_count,error_summary,run_id,created_at,completed_at";
+  "id,file_name,status,total_rows,cursor,imported_count,duplicate_count,invalid_count,error_summary,run_id,heartbeat_at,created_at,completed_at";
 
 export function sha256Hex(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
@@ -184,4 +185,14 @@ export async function listRowErrors(client: SupabaseClient, importId: string) {
     if (!data || data.length < pageSize) break;
   }
   return rows;
+}
+
+/** Matches replay_import: a queued or running import with no heartbeat for this long has lost its worker. */
+export const STALE_HEARTBEAT_MS = 5 * 60 * 1000;
+
+/** Whether the admin UI offers Replay. The database re-checks the same rule in replay_import. */
+export function canReplayImport(row: Pick<ImportSummary, "status" | "heartbeat_at">, now: Date): boolean {
+  if (row.status === "failed") return true;
+  if (row.status !== "queued" && row.status !== "running") return false;
+  return now.getTime() - new Date(row.heartbeat_at).getTime() > STALE_HEARTBEAT_MS;
 }
