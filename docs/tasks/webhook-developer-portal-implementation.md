@@ -1,9 +1,8 @@
 # Webhook Developer Portal reference host (implementation task)
 
-- Status: **Proposed. Not approved.** This task becomes "Approved for implementation" only after the coordinator or user
-  accepts [ADR 0005](../adr/0005-webhook-developer-portal.md) and approves this task, and after the preconditions below
-  are met. Until then it authorizes nothing: no code, migration, outbound request, credential, dependency, or remote
-  service.
+- Status: **Approved for local-only implementation.** [ADR 0005](../adr/0005-webhook-developer-portal.md) is accepted
+  for its documented v1 values. This task authorizes only the local fixture paths and operations below; it does not
+  authorize a remote service, production credential, deployment, dependency, or automatic merge.
 - Owner: Feature author (Claude B)
 - Proposed branch: `claude/webhook-portal-implementation-b`, created from the then-current `origin/feature/import-center`
   tip. The coordinator names the final branch on the assignment board. The base commit is recorded in the handoff.
@@ -20,11 +19,10 @@ feature, not installer logic. Outbound webhooks only; no inbound webhooks and no
 
 ## Preconditions (all must hold before any edit)
 
-1. PR #1 (Import Center reference host) is merged into `feature/import-center`. This task depends on its `tenants`,
-   `tenant_members`, `is_tenant_admin`, local Supabase configuration, `pgmq` pattern, operator-secret endpoint
-   pattern, and worker-exposure guard, none of which exist on `feature/import-center` today. If it is not merged, stop
-   and report to the coordinator.
-2. ADR 0005 is Accepted, and this task is changed to "Approved for implementation" by the coordinator.
+1. PR #1 (Import Center reference host) is merged into `feature/import-center` at `104aa75`. This task depends on its
+   `tenants`, `tenant_members`, `is_tenant_admin`, local Supabase configuration, `pgmq` pattern, operator-secret
+   endpoint pattern, and worker-exposure guard. If that prerequisite is not present, stop and report to the coordinator.
+2. ADR 0005 is Accepted and this task remains limited to its authorized paths and local-only operations.
 3. The research records PR #11 and PR #12 are merged, or the coordinator confirms them as accepted references.
 4. A Docker-compatible runtime and the fixture's local Supabase CLI are available. If not, record the exact blocked
    command and stop; do not claim database or integration results.

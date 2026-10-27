@@ -2,6 +2,17 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — Feature 2 implementation authorized
+
+**VERIFIED:** Feature 1 merged into canonical `feature/import-center` at `104aa75`, satisfying the implementation
+task prerequisite. ADR 0005 and [Webhook Developer Portal reference host](../../tasks/webhook-developer-portal-implementation.md)
+are now accepted for local-only implementation; the acceptance record is
+`docs/handoffs/webhook-developer-portal-adr-acceptance.md`.
+
+Create `claude/webhook-portal-implementation-b` from the current canonical tip. Implement only the task's authorized
+paths and local operations. Run the full fresh-local-Supabase and workspace verification plan; stop and report any
+task stop condition. Do not use a remote service, dependency, deployment, automatic merge, or Claude A.
+
 ## 2026-10-27 — overnight autonomous context and order
 
 You are the only active FeatureKit worker. Claude A is paused; do not ask for, assign, or wait on Claude A. Keep

@@ -1,9 +1,8 @@
-# ADR 0005: Webhook Developer Portal reference-host implementation (proposed)
+# ADR 0005: Webhook Developer Portal reference-host implementation
 
-- Status: **Proposed.** Not accepted. No code, migration, outbound delivery, credential, dependency, or remote service
-  is authorized by this ADR. Acceptance needs the coordinator or user, and implementation needs the separate task
-  [`docs/tasks/webhook-developer-portal-implementation.md`](../tasks/webhook-developer-portal-implementation.md)
-  to be approved as well.
+- Status: **Accepted for local-only reference-host implementation.** The decision record is bounded by the approved
+  implementation task [`docs/tasks/webhook-developer-portal-implementation.md`](../tasks/webhook-developer-portal-implementation.md).
+  It authorizes no remote service, production credential, deployment, dependency, or automatic merge.
 - Date: 2026-10-27
 - Owner: Claude B (Feature 2)
 - Task: [`docs/tasks/webhook-developer-portal-adr.md`](../tasks/webhook-developer-portal-adr.md)
@@ -33,15 +32,15 @@ The final review accepts #11 and #12 as research only and requires an ADR that r
 host's actual bindings and pinned versions". This ADR does that where a decision depends on a version-sensitive claim
 (section "Sources re-read for this ADR").
 
-**Prerequisite that this ADR cannot satisfy.** The tenant model (`tenants`, `tenant_members`, `is_tenant_admin`), the
-local Supabase configuration, the `pgmq` queue pattern, the operator-secret worker endpoint, and the worker-exposure
-guard all live in the Import Center reference host, which is on PR #1 and **not yet on `feature/import-center`**. This
-ADR therefore proposes a design that builds on that host and treats "PR #1 merged" as a hard precondition of the
-implementation task. If PR #1 does not merge, the tenancy and queue decisions below must be re-opened.
+**Implementation prerequisite.** The tenant model (`tenants`, `tenant_members`, `is_tenant_admin`), local Supabase
+configuration, `pgmq` queue pattern, operator-secret worker endpoint, and worker-exposure guard live in the Import
+Center reference host. PR #1 is now merged into `feature/import-center` at `104aa75`; the implementation task builds
+on that host. If that prerequisite is reverted or materially changed, the tenancy and queue decisions below must be
+re-opened.
 
 ## Decision summary
 
-| # | Decision | Proposed recommendation (one line) |
+| # | Decision | Accepted v1 decision (one line) |
 | --- | --- | --- |
 | D1 | Tenant, admin authority, ownership | Reuse the Import Center tenant model; tenant-owned endpoints; all actions admin-only; writes only through `SECURITY DEFINER` functions; no service role from a tenant request |
 | D2 | Event intent, identity, accounting | Outbox rows written in the same transaction as the business change; fan-out at emit time; stable `event_id` and `delivery_id`; append-only attempt records; at-least-once, unordered |
@@ -50,7 +49,7 @@ implementation task. If PR #1 does not merge, the tenancy and queue decisions be
 | D5 | Retry, replay, worker | Six attempts on a fixed schedule; lease and attempt-number guards; `pgmq` queue with an operator-authenticated worker; replay creates a linked delivery |
 | D6 | Retention, audit, tests | 30-day delivery retention and 90-day audit retention (proposed numbers); append-only audit of admin actions; local Supabase only; a named negative and integration test matrix |
 
-The proposed numbers (ports, attempt counts, delays, deadlines, retention) are listed again in "Items that need
+The accepted numbers (ports, attempt counts, delays, deadlines, retention) are listed again in "Items that need
 explicit approval". Each is a v1 constant in one module, so changing one later is an ADR amendment.
 
 ## D1. Tenant and admin authority, RLS boundary, endpoint ownership
