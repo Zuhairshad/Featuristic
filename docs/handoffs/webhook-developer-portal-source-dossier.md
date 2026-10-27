@@ -160,7 +160,21 @@ true of this environment. No other dossier assertion, source URL, or license not
 | `git diff --stat` after the two edits | `docs/evidence/webhook-developer-portal-source-dossier.md`: 5 insertions, 4 deletions (the two corrected sentences only). |
 | `git diff --check` | Exit 0, no whitespace errors. |
 
-The final comparison is checked after committing with `git diff --check origin/feature/import-center...HEAD`; the
-result is in the final report for this task. No GitHub review comment was posted, and PR #13 and every other PR were
-not modified. Limits are unchanged: nothing was executed, and the sources, access levels, and license evidence in the
+### Final results on the corrected head
+
+Recorded on request from the coordinator. The corrected head is `8a6b2e91ad1e7a5c3780976d3791b0b8d2ec93eb`
+(the merge `9c0a2f1` plus the corrections commit). The results were observed on that head; the second and third
+rows were re-run later against the then-current canonical tip.
+
+| Command | Canonical tip used | Result |
+| --- | --- | --- |
+| `git diff --check origin/feature/import-center...HEAD` | `8345d77b1f46fbe8fd71a9a3fc3b16922de9d77a`, at push time | Exit 0, no whitespace errors |
+| `git diff --check origin/feature/import-center...HEAD` | `6bdda1ff3ce0d8a2f6ce6b857bc8fa610f72e255`, re-run afterwards | Exit 0, no whitespace errors |
+| `git diff --check origin/feature/import-center...origin/claude/webhook-portal-source-dossier-b` | `6bdda1ff3ce0d8a2f6ce6b857bc8fa610f72e255` | Exit 0, no whitespace errors |
+| `git diff --name-only origin/feature/import-center...HEAD` | `6bdda1ff3ce0d8a2f6ce6b857bc8fa610f72e255` | `docs/coordination/questions/claude-b.md`, `docs/evidence/webhook-developer-portal-source-dossier.md`, `docs/handoffs/webhook-developer-portal-source-dossier.md`: the three authorized paths only |
+| `git diff --name-status origin/feature/import-center...HEAD` | `6bdda1ff3ce0d8a2f6ce6b857bc8fa610f72e255` | `M` the mailbox, `A` the dossier, `A` this handoff |
+
+This follow-up edits only this handoff, which is already one of the three paths, so it cannot change the changed-path
+set. The checks above are re-run after this amendment is pushed. No GitHub review comment was posted, and PR #13 and
+every other PR were not modified. Limits are unchanged: nothing was executed, and the sources, access levels, and license evidence in the
 dossier are as recorded above.
