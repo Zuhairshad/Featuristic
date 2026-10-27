@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Webhook Developer Portal transport research](webhook-developer-portal-transport-research.md) | New `claude/webhook-portal-transport-research-a` → documentation-only PR | Research documented server-side delivery boundaries; do not design or implement the feature. |
-| Claude B | Active | [Webhook source-license provenance](webhook-developer-portal-source-license-provenance.md) | Existing `claude/webhook-portal-source-dossier-b` → PR #11 | Collect factual publisher-license evidence only; do not give a legal conclusion or design the feature. |
+| Claude A | Active | [Webhook transport research corrections](webhook-developer-portal-transport-research-corrections.md) | Existing `claude/webhook-portal-transport-research-a` → PR #12 | Apply only PR #14 findings F1–F4; preserve all unresolved policy decisions. |
+| Claude B | Active | [Webhook source dossier corrections](webhook-developer-portal-source-dossier-corrections.md) | Existing `claude/webhook-portal-source-dossier-b` → PR #11 | Apply only PR #13 findings F1–F2; preserve the legal gate and unresolved decisions. |
 
 ## Assignment rules
 
