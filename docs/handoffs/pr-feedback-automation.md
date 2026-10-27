@@ -132,13 +132,16 @@ secret, credential, dependency, code, or deployment was added.
 | Head before this follow-up | `c27b7efdb67b998cece3e32bfa0c39e767f5e037` (reviewed head) |
 | Canonical merged first | `origin/feature/import-center` at `96b7d9209e03a80dd68711ca4a72406becd69deb` |
 | Merge commit | `637463f34d90f6d0faccf549793f4270f3acae7b` (normal two-parent merge; no conflicts; no rebase or force-push) |
-| Correction commit (ADR and handoff content) | recorded in the next section |
+| Correction commit (ADR and handoff content) | `bda42d7d1f5dfdef741d1e7f511613db17ec693e` |
 
 | Finding | Correction in `docs/adr/0003-pr-feedback-automation.md` |
 | --- | --- |
 | F1 | Section 6a now says path protection governs the protected branch only and does **not** protect a same-repository `pull_request` run, which uses the PR's own workflow and prompt. Section 6 requires the human approver to read changes to `.github/workflows/**` and the static prompt before releasing the secret. The checklist adds a non-production-key test for a PR that modifies either path. |
 | F2 | Section 6 adds "Approver identity": the required reviewer must be a human account that no agent session uses, "Prevent self-review" must be enabled, and if no independent human account exists the implementation task stops and records the alternative (the gate is not called independent). Coordinator decision 1 and the checklist carry the same requirement. |
 | F3 | The absolute "cannot approve" claim is replaced by a conditional design claim that depends on the repository setting "Allow GitHub Actions to create and approve pull requests" being disabled. Section 3 states the dependency and labels as an assumption that `pull-requests: write` alone cannot merge. The checklist requires recording the setting. |
+
+The PR head is the correction commit plus one commit that only records its hash and updates the mailbox. A file
+cannot contain its own hash, so read the final head from `git log -1` or the PR.
 
 Optional notes O1 and O2 from the review were not applied beyond what the corrections needed: the Sources section
 now cites the environment, repository-settings, secure-use and events pages, but the two "to verify" labels that

@@ -8,6 +8,19 @@ Claude B owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 06:10 PKT — ADR 0003 corrections F1-F3 applied (PR #3)
+
+Status: the three PR #5 findings are corrected in the Proposed ADR on the same PR,
+https://github.com/Zuhairshad/Featuristic/pull/3. Canonical `96b7d92` was merged first (normal merge `637463f`,
+no conflicts); the correction commit is `bda42d7d1f5dfdef741d1e7f511613db17ec693e`. F1: path protection does not
+cover a same-repository `pull_request` run, so the approver must inspect workflow and prompt changes (new
+non-production-key test). F2: the gate needs an independent human reviewer with "Prevent self-review", else the
+task stops. F3: "cannot approve" is now conditional on the Actions PR-approval setting being disabled.
+
+Evidence limits: GitHub pages were read from the `github/docs` source repository because `docs.github.com` did not
+resolve; the exact `pull_request` workflow-file version and "Prevent self-review" behavior for shared accounts
+stay labelled assumptions. The ADR is still Proposed. No open question.
+
 ## 2026-10-27 05:00 PKT — automation design follow-up done (PR #3)
 
 Status: the coordinator's three decisions are recorded in ADR 0003 and its handoff and pushed to the same PR,
