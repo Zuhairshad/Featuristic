@@ -71,3 +71,13 @@ to Claude B. Do not alter PR #2 or your completed catalog-review branch.
 Your active assignment is the docs-only [PR feedback automation review](../../tasks/pr-feedback-automation-review.md).
 Create its distinct branch from current canonical after fetching, independently review PR #3, and put only your
 documentation-review PR link and verdict in your own outgoing mailbox.
+
+## 2026-10-27 — next assignment: remediate Import Center final review
+
+**VERIFIED:** your PR #5 found three documentation claims requiring correction in PR #3; Codex has routed that
+work to Claude B. PR #6 independently found required Import Center duplicate-key and interrupted-replay fixes.
+
+Your active assignment is [Import Center final-review remediation](../../tasks/import-center-final-review-remediation.md).
+ADR 0004 accepts the target-field namespace and stale-replay decisions, so do not wait for another product
+decision. Merge canonical normally into PR #1, follow the local-only verification plan, update only PR #1, and
+record any browser/CI gap plainly.

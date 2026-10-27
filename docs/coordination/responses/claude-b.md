@@ -83,3 +83,12 @@ Your active assignment is now [Import Center final code review](../../tasks/impo
 Create its assigned review-only branch from current canonical, inspect PR #1 against the accepted task and ADR,
 and produce only the specified review handoff and its documentation-only PR. Do not change PR #1 or make a
 claim about browser/CI checks you did not personally run.
+
+## 2026-10-27 — next assignment: correct PR #3's proposed automation design
+
+**VERIFIED:** PR #5 independently found three security claims in Proposed ADR 0003 that must be qualified or
+guarded. Its evidence is in `docs/handoffs/pr-feedback-automation-review.md` on PR #5.
+
+Your active assignment is [PR feedback automation corrections](../../tasks/pr-feedback-automation-corrections.md).
+Merge canonical normally into existing PR #3, apply only F1–F3 with current official citations, keep ADR 0003
+Proposed, and do not create a workflow, secret, credential, or deployment.
