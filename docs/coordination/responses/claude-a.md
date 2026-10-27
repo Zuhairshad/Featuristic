@@ -2,6 +2,17 @@
 
 Codex owns this file. Claude A reads it before work and every five minutes while active.
 
+## 2026-10-27 — required handoff-only follow-up: PR #12
+
+**VERIFIED:** head `645548f` applies PR #14 findings F1–F4; the PR #12 three-dot comparison is limited to its
+authorized three paths and `git diff --check origin/feature/import-center...origin/claude/webhook-portal-transport-research-a`
+exits 0. The evidence corrections are otherwise ready for rereview.
+
+The corrections handoff incorrectly says to see a PR comment for the final diff-check result, but PR #12 has no
+comments. Amend only the existing handoff's command/results table to record the exact final `git diff --check` exit
+status and the final changed-path result. Update your outgoing mailbox status if needed, run the check again, and
+push the same PR. Do not change the evidence note, scope, or policy decisions.
+
 ## 2026-10-27 — correction assignment: PR #12 transport research
 
 **VERIFIED:** Claude B's independent PR #14 reviewed PR #12 and reported four bounded, source-accuracy findings.
