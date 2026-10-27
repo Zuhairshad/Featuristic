@@ -197,3 +197,50 @@ tested, and no outbound request was made to any webhook receiver.
 A separately approved ADR and task, after the coordinator decides the items in section 5, re-reads the published
 pages for the pinned versions, and completes section 8. This dossier gives no effort estimate, release promise, or
 claim that any capability was tested.
+
+## 11. Source provenance and license notices (added 2026-10-27; factual only)
+
+This section collects the license notices that the publishers' own repositories state for the documentation
+sources cited above. It is **evidence collection only. It is not legal advice**, it does not interpret any notice,
+and it concludes nothing about copying, quotation, redistribution, attribution obligations, license
+compatibility, or fair use. It does **not** resolve the human legal-review gate. It replaces only the statement in
+section 9 that no notice had been looked at; the legal review that section 9 requires is still open.
+
+### 11.1 Method and limits
+
+- Retrieved 2026-10-27 through the same page-summarizing fetch tool as the rest of this dossier, from the
+  publishers' own repositories on `raw.githubusercontent.com`. Only short identifying phrases are quoted, and no
+  license text is copied here.
+- **Revisions:** the files were read from the named branch. The GitHub API returned HTTP 403 for the branch-head
+  lookup of all four repositories, so an exact commit SHA or tag is **not established** for any of them.
+- First-party published pages were not usable for notices: `nextjs.org` and `supabase.com` did not resolve, and
+  `cheatsheetseries.owasp.org` was not opened. Where only a repository notice was available, the table says so.
+- Coverage: every publisher or repository cited in sections 3 and 7 is listed (Next.js and Vercel, Supabase,
+  Node.js, OWASP). No secondary license summary was used.
+
+### 11.2 Notices found
+
+| Source (dossier ids) | Repository and branch read | File read and exact URL | Notice as stated in the file | Published documentation terms |
+| --- | --- | --- | --- | --- |
+| Next.js, Vercel (N1 to N4) | `vercel/next.js`, branch `canary` | `license.md`: <https://raw.githubusercontent.com/vercel/next.js/canary/license.md> | Titled "The MIT License (MIT)", with the line "Copyright (c) 2025 Vercel, Inc." The file does not name a directory or content type; its text defines "Software" as "this software and associated documentation files". | **Not established.** `nextjs.org` was unreachable. A `README.md` read at the same branch returned HTTP 404, so no README notice was read. |
+| Supabase (S1 to S9) | `supabase/supabase`, branch `master` | `LICENSE`: <https://raw.githubusercontent.com/supabase/supabase/master/LICENSE> | Titled "Apache License", "Version 2.0, January 2004", with the line "Copyright 2024 Supabase". The file does not say it covers or excludes `apps/docs` or any documentation content. | **Not established.** `supabase.com` was unreachable. The root `README.md` has no License section (its badges state no license), and `apps/docs/README.md` has no license statement. |
+| Node.js (G1 to G4) | `nodejs/node`, branch `main` | `LICENSE`: <https://raw.githubusercontent.com/nodejs/node/main/LICENSE> | Opens "Node.js is licensed for use as follows:", with the line "Copyright Node.js contributors. All rights reserved." The grant text refers to "associated documentation files". No separate documentation terms were found in the part read. The file lists externally maintained components under their own licenses (examples named: Acorn, c-ares, LIEF, OpenSSL, V8, libuv, undici) and gives different terms for the ICU "Data Files" (Unicode License V3). | **Not established** for the published pages as a whole. `https://nodejs.org/api/documentation.html` contains no license notice in its page text. `doc/README.md` in the repository has no license statement. |
+| OWASP (G5) | `OWASP/CheatSheetSeries`, branch `master` | `LICENSE.md`: <https://raw.githubusercontent.com/OWASP/CheatSheetSeries/master/LICENSE.md> (a read of `LICENSE` returned HTTP 404) | Titled "Attribution-ShareAlike 4.0 International", with SPDX identifier CC-BY-SA-4.0 as stated in the file. No standalone copyright line; the text names Creative Commons Corporation as the publisher of the license text. The file defines "Licensed Material" generally and does not name a particular cheat sheet. | **Not established.** `README.md` has no License section; its only reference is a badge with alt text "Creative Commons License" and title "CC BY-SA 4.0" linking to `creativecommons.org/licenses/by-sa/4.0/`, and the README does not say which content the badge covers. Whether the specific cheat sheet file read (`cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.md`) carries its own notice was not checked. |
+
+### 11.3 Parts not read, and what was not established
+
+- Node.js `LICENSE` is 154,603 characters; only the first 100,000 were read, so the remaining 54,603 characters
+  (further third-party notices) were not.
+- Exact commit SHAs or tags for all four repositories: not established.
+- Published documentation terms for the Next.js, Supabase, and OWASP sites, and any terms-of-use page of any
+  publisher: not established.
+- Whether a repository-level license applies to the documentation content of that repository is a question this
+  section does not answer. The files above are recorded as found.
+
+### 11.4 Legal-review gate: still unresolved
+
+This evidence does not decide whether anything in this dossier, or any later Webhook Developer Portal work, may be
+quoted, copied, adapted, attributed, or distributed. Any ADR that adopts a library, vendor, service, or copied
+material needs its own license review by the appropriate human owner, and the research record's source and
+license gate stays open until that review exists. Every research label, assumption, and unresolved decision in
+sections 1 to 10 is unchanged by this section.

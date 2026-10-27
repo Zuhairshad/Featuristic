@@ -71,3 +71,55 @@ scheduler adapter, the hosting target for background work, and the event-source 
 - Base: `origin/feature/import-center` at `ca7bd580992875e7d0548ad6001300fe9121c177`.
 - This branch changes the three paths above only. No GitHub review comment was posted, nothing was merged, and no
   other agent's mailbox was edited.
+
+## License provenance follow-up
+
+Task: [`docs/tasks/webhook-developer-portal-source-license-provenance.md`](../tasks/webhook-developer-portal-source-license-provenance.md).
+The dossier's new section 11 appends factual publisher and repository license notices. It is **evidence
+collection only, not legal advice**, and it does not resolve the human legal-review gate or interpret any notice.
+
+| Item | Value |
+| --- | --- |
+| Head before this follow-up | `6f2ba2411ae2441c3601cd8cb5e1d82a78a1a99b` |
+| Canonical merged first | `origin/feature/import-center` at `f5bc77805e8d0d27050aab287f7bd699572670b9` |
+| Merge commit | `dfc61d097962b44f757a0373c4bee6c170eb673f` (normal two-parent merge; no conflicts; no rebase or force-push) |
+
+The PR head is the merge commit plus the follow-up commit that adds section 11 and this note. A file cannot
+contain its own hash, so read the final head from `git log -1` or the PR.
+
+### Files read (all retrieved 2026-10-27, only short identifying phrases recorded)
+
+| Source | File | Result |
+| --- | --- | --- |
+| Next.js, Vercel | `vercel/next.js` `canary` `license.md` | Read: MIT, `Copyright (c) 2025 Vercel, Inc.` |
+| Next.js, Vercel | `vercel/next.js` `canary` `README.md` | HTTP 404 |
+| Supabase | `supabase/supabase` `master` `LICENSE` | Read: Apache License, Version 2.0, `Copyright 2024 Supabase`; no statement on `apps/docs` |
+| Supabase | `README.md` and `apps/docs/README.md` | Read: no license statement |
+| Node.js | `nodejs/node` `main` `LICENSE` | First 100,000 of 154,603 characters read: `Copyright Node.js contributors`, third-party components under their own licenses |
+| Node.js | `doc/README.md`; published `nodejs.org/api/documentation.html` | Read: no license statement or notice in the text |
+| OWASP | `OWASP/CheatSheetSeries` `master` `LICENSE` | HTTP 404 |
+| OWASP | `LICENSE.md` | Read: Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0) |
+| OWASP | `README.md` | Read: no License section; one CC BY-SA 4.0 badge with no coverage statement |
+| Revisions | `api.github.com/repos/<owner>/<repo>/commits/<branch>` for all four repositories | HTTP 403; commit SHAs and tags are **not established** |
+
+Each file was read through a page-summarizing fetch tool and is identified by its exact raw URL in section 11.2 of
+the dossier. No secondary license summary was used and no license text was copied.
+
+### Not established
+
+Exact revisions for all four repositories; published documentation terms for `nextjs.org`, `supabase.com`, and the
+OWASP site (the first two did not resolve, the third was not opened); the unread 54,603 characters of the Node.js
+`LICENSE`; and whether the repository licenses apply to the documentation content. The legal-review gate is
+unresolved.
+
+### Commands run and observed results (before committing)
+
+| Command | Result |
+| --- | --- |
+| `git merge --no-ff origin/feature/import-center` | Exit 0, merge commit `dfc61d0`, no conflicts. |
+| `git diff --stat` after appending section 11 | `docs/evidence/webhook-developer-portal-source-dossier.md`: 47 insertions, 0 deletions (append only). |
+| `git diff --check` | Exit 0, no whitespace errors. |
+
+The final comparison is checked after committing with `git diff --check origin/feature/import-center...HEAD` and
+`git diff --name-only origin/feature/import-center...HEAD`; the results are in the PR description. No GitHub review
+comment was posted, and PR #10, PR #1 and the other PR branches were not touched.
