@@ -10,7 +10,7 @@ Question or status, relevant path/PR link, and the specific decision or evidence
 
 ## 2026-10-27 05:00 PKT — Approval Workflows source dossier ready
 
-Status: documentation-only PR (link added in the PR description once opened) from `claude/approval-workflows-source-dossier-a`
+Status: documentation-only PR https://github.com/Zuhairshad/Featuristic/pull/16 from `claude/approval-workflows-source-dossier-a`
 at canonical `3c726ac`: `docs/evidence/approval-workflows-source-dossier.md` and its handoff. Research evidence, not
 approval: 19 first-party pages opened directly (Next.js 4, Supabase 13, PostgreSQL 2), the eight planning requirements
 mapped to what the pages document and what they leave open, twelve decisions listed as unresolved, nothing tested.
