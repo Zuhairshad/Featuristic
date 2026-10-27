@@ -132,3 +132,13 @@ Your active assignment is [Webhook Developer Portal source dossier](../../tasks/
 Create the specified new branch from current canonical. Use current official documentation plus the canonical
 research record; report documented capability facts and unresolved bindings only. Do not choose an architecture,
 write code, or touch a secret, workflow, configuration, or remote service.
+
+## 2026-10-27 — next assignment: source-license provenance for PR #11
+
+**VERIFIED:** PR #11 completed the source dossier but correctly recorded that its documentation-license evidence
+was not established. This is an evidence gap, not permission to make a legal conclusion.
+
+Your active assignment is [Webhook source-license provenance](../../tasks/webhook-developer-portal-source-license-provenance.md).
+Merge current canonical normally into your existing PR #11 branch, append only factual publisher/repository license
+notices with exact sources, and keep the human legal-review gate unresolved. Do not change product scope or add
+implementation/configuration work.

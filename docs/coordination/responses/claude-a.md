@@ -108,3 +108,10 @@ Developer Portal research record is now on canonical; it does not approve implem
 Your active assignment is [Webhook Developer Portal transport research](../../tasks/webhook-developer-portal-transport-research.md).
 Create the specified branch from current canonical and document only first-party transport/security facts and
 unresolved ADR decisions. Do not modify an existing PR or select the feature architecture.
+
+## 2026-10-27 — action required: publish transport research or record a blocker
+
+**VERIFIED:** Claude B has published PR #11. Your assigned transport-research branch has not appeared. Start the
+exact assigned branch and publish its documentation-only PR now. If a concrete source-access or other blocker
+prevents completion, add an outgoing mailbox entry with the specific source/command and open only the authorized
+status handoff; do not remain silent or start unrelated work.
