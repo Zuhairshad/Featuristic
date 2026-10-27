@@ -4,7 +4,10 @@
 - Date: 2026-10-27
 - Task: [`docs/tasks/pr-feedback-automation-design.md`](../tasks/pr-feedback-automation-design.md)
 - Origin: the workflow proposal in the Codex review of PR #1 (comment `6425693207`)
-- Amended 2026-10-27 with the coordinator's baseline security decisions (see "Coordinator decisions"). Still Proposed.
+- Amended 2026-10-27 with the coordinator's baseline security decisions (see "Coordinator decisions").
+- Amended 2026-10-27 again to correct three security claims found by the independent review in PR #5 (F1: path
+  protection does not cover a same-repository `pull_request` run; F2: approver independence; F3: the "cannot
+  approve" claim). Still Proposed.
 
 ## Context
 
@@ -22,8 +25,10 @@ corrects its weak points. It authorizes nothing: implementing it needs a separat
 ## Decision (proposed)
 
 Add **one** advisory workflow that runs the official `openai/codex-action` once when a same-repository pull
-request is opened or reopened and posts Codex's final message as a single PR comment. It cannot merge, deploy,
-approve, push, or edit application source. Everything after that comment is a human or Claude action.
+request is opened or reopened and posts Codex's final message as a single PR comment. It is designed not to merge,
+deploy, push, or edit application source, and not to approve pull requests **provided** the repository setting
+"Allow GitHub Actions to create and approve pull requests" is disabled (a setting this ADR has not inspected; see
+section 3 and the checklist). Everything after that comment is a human or Claude action.
 
 ### 1. Trigger and round limit
 
@@ -63,9 +68,13 @@ The action's own example workflow uses the same split.
 
 - Set `permissions:` explicitly at workflow and job level. GitHub's guidance is to grant `GITHUB_TOKEN` the
   minimum required permissions and raise them per job.
-- The proposed design grants no `contents: write`, no `actions`, no `id-token`, no `deployments`, and nothing
-  that can merge. The workflow cannot merge or deploy because it holds no token capable of either and contains
-  no step that attempts it.
+- The proposed design grants no `contents: write`, no `actions`, no `id-token`, and no `deployments`, and it
+  contains no step that attempts to merge, deploy, push, or approve. The posting job does hold
+  `pull-requests: write`. GitHub documents a repository setting, "Allow GitHub Actions to create and approve pull
+  requests", that controls whether `GITHUB_TOKEN` can create and approve pull requests; for a repository created
+  in a personal account it is off by default, and an organization repository inherits the organization's value.
+  The design therefore **depends on that setting being disabled** and the implementation task must record it.
+  That `pull-requests: write` alone cannot merge a pull request is an **assumption** that was not verified here.
 
 ### 4. Safe checkout and action settings
 
@@ -113,21 +122,41 @@ revoke through the OpenAI Platform if it leaks, as the action's security page ad
 
 **Protected environment (coordinator decision).** `OPENAI_API_KEY` is held by the GitHub Actions environment
 `codex-pr-review`, which has at least one repository-maintainer required reviewer. The `codex` job declares
-that environment, so the review begins only after a maintainer approves the run. This deliberate manual release
-protects the secret from unreviewed same-repository PR code. It matters because GitHub gives read access to
-repository secrets to anyone with write access, and a same-repository PR author can change the workflow file
-in their own PR; the environment gate means that change cannot reach the secret until a maintainer has looked at
-the run. GitHub's secure-use guidance also notes that workflows using environment secrets "are not run in an
-isolated environment", so approval is a gate, not a sandbox. Reopening a PR starts another run that needs its
-own approval. **Assumption to verify at implementation:** that a job referencing a protected environment is
-held before the environment's secrets are released; this is GitHub's documented environments behavior but its
-page was not read for this ADR.
+that environment, so the review begins only after a maintainer approves the run. GitHub documents that a job
+referencing an environment must follow the environment's protection rules "before running or accessing the
+environment's secrets", that only one of the required reviewers needs to approve, and that "a workflow job cannot
+access environment secrets until approval is granted by a reviewer". This deliberate manual release is the only
+barrier between the secret and PR-controlled code. That matters because GitHub gives read access to repository
+secrets to anyone with write access, and a same-repository PR author can change the workflow file in their own
+PR. GitHub's secure-use guidance also notes that workflows using environment secrets "are not run in an isolated
+environment", so approval is a gate, not a sandbox. Reopening a PR starts another run that needs its own
+approval.
+
+**What the approver must do (correction F1).** For a same-repository `pull_request` run, the run uses the PR's
+own versions of `.github/workflows/codex-pr-review.yml` and of the static prompt (assumption: see Sources), so
+repository path protection (section 6a) does **not** protect that run. The human approver must therefore read the
+PR's changes to `.github/workflows/**` and to the static prompt path before releasing the environment secret, and
+must not approve a run whose PR changes either without that review. The acceptance checklist requires a test of
+exactly this case, using a non-production key.
+
+**Approver identity (correction F2).** The required reviewer must be a human account that **no agent session
+uses**, and the environment setting "Prevent self-review" must be enabled; GitHub describes it as preventing
+"users from approving workflows runs that they triggered". If no independent human account exists when the
+implementation task starts, this gate is **not independent**: the task must stop and record the alternative for
+review, as in section 6a, and must not describe the gate as independent. In this repository the API reports PRs
+#1 to #4 as authored by one login, so the current state suggests agent sessions and the owner share an identity.
+That observation is not a test of whether an agent session could approve its own run, and nothing here claims it
+could or could not.
 
 ### 6a. Protected workflow and prompt paths (coordinator decision)
 
 A future implementation task must add repository protection for **both** `.github/workflows/codex-pr-review.yml`
-and the workflow's static prompt file, so neither can change without review. The task must use GitHub
-CODEOWNERS or equivalent path protection and verify that the mechanism actually enforces review on those paths.
+and the workflow's static prompt file, so neither can change **on the protected branch** without review. This
+does not protect a `pull_request` run for a same-repository PR: that run uses the workflow and prompt from the
+PR's own merge commit, so the environment approval in section 6 is the only control for that case. The task must
+use GitHub CODEOWNERS or equivalent path protection and verify that the mechanism actually enforces review on
+those paths. GitHub's wording is that, with the workflows directory in the code owners list, "any proposed
+changes to these files will first require approval from a designated reviewer".
 **If CODEOWNERS or path protection is unavailable, that task must stop and record the alternative for review.**
 It must not substitute a weaker control.
 
@@ -197,16 +226,30 @@ jobs:
 Read for this ADR on 2026-10-27. Pages on `docs.github.com` and `developers.openai.com` were **not directly
 reachable** from the authoring environment; the GitHub guidance below was read from the `github/docs` source
 repository and the action guidance from the `openai/codex-action` repository, which are the upstream sources of
-those documents. Treat wording as a close paraphrase and re-check the live pages before implementation.
+those documents. Wording was returned by a page-summarizing fetch tool, so treat quotations as close paraphrases
+and re-check the live pages before implementation. The URLs below point at the published pages; where noted, a
+URL was derived from the source path and the published page itself was not opened.
 
 - GitHub Docs, [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
-  (`pull_request` default types, `types`, `GITHUB_SHA`/`GITHUB_REF`, events created by `GITHUB_TOKEN`).
+  (`pull_request` default types, `types`, `GITHUB_SHA`/`GITHUB_REF`, events created by `GITHUB_TOKEN`; the
+  `pull_request_target` section's statement that it runs "in the context of the base of the pull request rather
+  than in the context of the merge commit, as the `pull_request` event does").
 - GitHub Docs, [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
   (least-privilege token, script injection and intermediate environment variables, `pull_request_target`,
-  pinning to a full-length commit SHA, secrets access, self-hosted runners).
+  pinning to a full-length commit SHA, secrets access, self-hosted runners; CODEOWNERS for workflow files:
+  "any proposed changes to these files will first require approval from a designated reviewer"; environment
+  secrets: "A workflow job cannot access environment secrets until approval is granted by a reviewer").
+- GitHub Docs, [Managing environments for deployment](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
+  (URL derived from the `github/docs` source path; required reviewers, up to 6, only one needs to approve;
+  optional "Prevent self-review"; protection rules are followed before a job runs or accesses the environment's
+  secrets).
+- GitHub Docs, [Managing GitHub Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository)
+  (the setting "Allow GitHub Actions to create and approve pull requests": off by default for repositories in a
+  personal account, inherited from the organization for organization repositories).
 - GitHub Docs search summaries for fork behavior (no secrets other than `GITHUB_TOKEN`, read-only token for fork
   PRs) were not confirmed from the page text, because the fetched page defers fork details to a shared
-  snippet. Treat that fork statement as **to verify on the live page**.
+  snippet. Treat that fork statement as **to verify on the live page**. The PR #5 review reports that it found
+  the statement on the live pages; that was not personally re-checked here.
 - OpenAI, [`openai/codex-action` README](https://github.com/openai/codex-action) (inputs, `final-message`
   output, `safety-strategy` values, permission profiles, example workflow with `pull_request` `opened`).
 - OpenAI, [`openai/codex-action` security guidance](https://github.com/openai/codex-action/blob/main/docs/security.md)
@@ -214,9 +257,19 @@ those documents. Treat wording as a close paraphrase and re-check the live pages
 - OpenAI, [Codex GitHub Action](https://developers.openai.com/codex/github-action) overview, seen only through a
   search snippet; not fetched.
 
-**Untested integration details (assumptions):** exact input names and accepted values of `permission-profile`
-and `safety-strategy` at the pinned version; that the posted comment fits GitHub's comment size limit (truncate
-if needed, limit not verified here); and runner behavior of `drop-sudo` on the chosen runner image.
+**Untested integration details (assumptions):**
+
+- Exact input names and accepted values of `permission-profile` and `safety-strategy` at the pinned version; that
+  the posted comment fits GitHub's comment size limit (truncate if needed, limit not verified here); and runner
+  behavior of `drop-sudo` on the chosen runner image.
+- Which version of the workflow file and prompt a same-repository `pull_request` run uses. The documentation
+  describes the event as running "in the context of the merge commit" and contrasts `pull_request_target`, but it
+  does not state directly which workflow file version runs. The design assumes the PR's own version; the
+  checklist test for a PR that modifies the workflow confirms it.
+- Whether "Prevent self-review" blocks an agent session that approves with the same account as the PR author.
+  GitHub's text covers users who triggered the run; how agent credentials are treated is not documented here.
+- That `pull-requests: write` alone cannot merge a pull request, and the effective value of the repository and
+  organization setting "Allow GitHub Actions to create and approve pull requests". Neither was inspected.
 
 ## Coordinator decisions (2026-10-27)
 
@@ -224,7 +277,8 @@ Recorded from `docs/coordination/responses/claude-b.md`. They are decisions abou
 not accept this ADR or authorize any workflow.
 
 1. **Environment.** `OPENAI_API_KEY` lives in the protected environment `codex-pr-review` with at least one
-   repository-maintainer required reviewer; the review begins after that approval (section 6).
+   repository-maintainer required reviewer; the review begins after that approval (section 6). The reviewer must
+   be an independent human account with "Prevent self-review" enabled, or the task stops (correction F2).
 2. **Protected paths.** The implementation task protects `.github/workflows/codex-pr-review.yml` and its static
    prompt, or stops and records an alternative if CODEOWNERS/path protection is unavailable (section 6a).
 3. **Pins.** Full commit SHAs for every action are resolved only in the implementation task from then-current
@@ -241,7 +295,16 @@ An implementation is accepted only when a **separate approved task** exists and 
 - [ ] The environment `codex-pr-review` exists with at least one repository-maintainer required reviewer, and
       `OPENAI_API_KEY` is configured there as an environment secret by a maintainer; the value never appears in a
       file, log, or comment.
+- [ ] The environment's required reviewer is a human account that no agent session uses, "Prevent self-review" is
+      enabled, and both are recorded with evidence that no agent session's credentials can approve the pending
+      deployment. If no independent human account exists, the task stopped and recorded the alternative for review
+      (the gate is not described as independent).
 - [ ] A test run shows the `codex` job waiting for approval and the review not starting until a maintainer approves.
+- [ ] A same-repository test PR that modifies the workflow file or the static prompt does not start the key-bearing
+      job until an approver releases the environment, and the approval record shows the approver reviewed that
+      change. This test uses a non-production key and also confirms which workflow version the run used.
+- [ ] The repository setting "Allow GitHub Actions to create and approve pull requests" is recorded as disabled
+      (including any organization-level value that the repository inherits).
 - [ ] CODEOWNERS or equivalent protection covers `.github/workflows/codex-pr-review.yml` and its static prompt, with
       evidence that review is enforced; if unavailable, the task stopped and recorded the alternative for review.
 - [ ] `actions/checkout`, `openai/codex-action`, and any posting action are pinned to full-length commit SHAs
@@ -252,7 +315,8 @@ An implementation is accepted only when a **separate approved task** exists and 
 - [ ] A follow-up push to the PR does **not** start another run.
 - [ ] Closing and reopening the PR starts at most one more run, and that is understood as manual.
 - [ ] The workflow's effective permissions show `contents: read` for the key-bearing job and no write token
-      anywhere that can merge or deploy; no step merges, deploys, approves, or pushes.
+      anywhere that can merge or deploy; no step merges, deploys, approves, or pushes. Evidence also covers the
+      assumption that `pull-requests: write` alone cannot merge.
 - [ ] A PR whose title, body, or file content contains instruction-like text does not change the workflow's
       permissions or outputs beyond the single comment.
 - [ ] Assumptions listed above are confirmed or corrected in the ADR, which is then updated and reviewed before

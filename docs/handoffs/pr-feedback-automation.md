@@ -68,8 +68,9 @@ outgoing mailbox, as the task allows).
 The former "open decisions" section is replaced by "Coordinator decisions". The only items left to the
 implementation task are the exact static-prompt path and content, and the assumptions listed under Sources.
 
-New assumption recorded: that a job referencing a protected environment is held before its secrets are
-released. The GitHub environments page was not read for this amendment.
+Assumption recorded at that point: that a job referencing a protected environment is held before its secrets are
+released. Superseded: the GitHub environments page was read in the later correction task and documents it (see
+"Review follow-up" below).
 
 Git state for this amendment:
 
@@ -118,6 +119,59 @@ Commands run and observed results (before this recording commit):
 
 The PR #3 comparison is limited to the automation-design files and Claude B's outgoing status note. PR #3 is held
 for Claude A's independent review and is not merged.
+
+## Review follow-up (PR #5 findings F1 to F3)
+
+Task: [`docs/tasks/pr-feedback-automation-corrections.md`](../tasks/pr-feedback-automation-corrections.md). Review:
+PR #5, `docs/handoffs/pr-feedback-automation-review.md` on `claude/pr-feedback-automation-review-a` (head
+`1bdacea0b5df7966b67bc2dbd496c01a569af198`), verdict REQUEST CHANGES. ADR 0003 remains **Proposed**; no workflow,
+secret, credential, dependency, code, or deployment was added.
+
+| Item | Value |
+| --- | --- |
+| Head before this follow-up | `c27b7efdb67b998cece3e32bfa0c39e767f5e037` (reviewed head) |
+| Canonical merged first | `origin/feature/import-center` at `96b7d9209e03a80dd68711ca4a72406becd69deb` |
+| Merge commit | `637463f34d90f6d0faccf549793f4270f3acae7b` (normal two-parent merge; no conflicts; no rebase or force-push) |
+| Correction commit (ADR and handoff content) | recorded in the next section |
+
+| Finding | Correction in `docs/adr/0003-pr-feedback-automation.md` |
+| --- | --- |
+| F1 | Section 6a now says path protection governs the protected branch only and does **not** protect a same-repository `pull_request` run, which uses the PR's own workflow and prompt. Section 6 requires the human approver to read changes to `.github/workflows/**` and the static prompt before releasing the secret. The checklist adds a non-production-key test for a PR that modifies either path. |
+| F2 | Section 6 adds "Approver identity": the required reviewer must be a human account that no agent session uses, "Prevent self-review" must be enabled, and if no independent human account exists the implementation task stops and records the alternative (the gate is not called independent). Coordinator decision 1 and the checklist carry the same requirement. |
+| F3 | The absolute "cannot approve" claim is replaced by a conditional design claim that depends on the repository setting "Allow GitHub Actions to create and approve pull requests" being disabled. Section 3 states the dependency and labels as an assumption that `pull-requests: write` alone cannot merge. The checklist requires recording the setting. |
+
+Optional notes O1 and O2 from the review were not applied beyond what the corrections needed: the Sources section
+now cites the environment, repository-settings, secure-use and events pages, but the two "to verify" labels that
+could not be re-confirmed here (the fork-PR statement and the exact `pull_request` workflow-file version) are kept.
+
+### Sources used and how (be aware before relying on them)
+
+`docs.github.com` and `developers.openai.com` did not resolve from the authoring environment. The upstream
+Markdown on `raw.githubusercontent.com` was read through a summarizing fetch tool on 2026-10-27:
+
+- `github/docs`: `manage-environments.md` (required reviewers, up to 6, only one must approve, optional "Prevent
+  self-review", protection rules before a job runs or reads environment secrets);
+  `managing-github-actions-settings-for-a-repository.md` (the setting "Allow GitHub Actions to create and approve
+  pull requests", defaults); `secure-use.md` (CODEOWNERS for workflow files; "A workflow job cannot access
+  environment secrets until approval is granted by a reviewer"); `events-that-trigger-workflows.md`
+  (`pull_request_target` runs in the base context "rather than in the context of the merge commit, as the
+  `pull_request` event does").
+- The URL for the environments page was derived from its source path and the published page was not opened.
+- Not directly stated by those pages and therefore kept as assumptions: which workflow-file version a
+  same-repository `pull_request` run uses (the docs only contrast it with `pull_request_target`); whether
+  "Prevent self-review" blocks an agent that approves with the PR author's account; that `pull-requests: write`
+  alone cannot merge; and the live repository and organization settings, which were not inspected.
+
+Commands run and observed results (before the recording commit):
+
+| Command | Result |
+| --- | --- |
+| `git merge --no-ff origin/feature/import-center` | Exit 0, merge commit `637463f`, no conflicts. |
+| `git diff --name-only origin/feature/import-center...HEAD` (after the merge) | `docs/adr/0003-pr-feedback-automation.md`, `docs/coordination/questions/claude-b.md`, `docs/handoffs/pr-feedback-automation.md`. |
+| `git diff --check` (working tree, after the ADR edits) | Exit 0. |
+| Search of the ADR for the removed absolute wording ("cannot approve", "so neither can change without") | No matches; the remaining "cannot merge" hits are inside the labelled assumption. |
+
+No GitHub review comment was posted, per the task, and PR #1, PR #2 and the other branches were not touched.
 
 ## Deferred implementation steps (require a separate approved task)
 
