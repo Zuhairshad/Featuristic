@@ -120,7 +120,7 @@ repositories on 2026-10-27):
 
 | Command or action | Result |
 | --- | --- |
-| `git fetch origin` | Canonical `9712c9d`; PR #11 head `4781832` per the branch tip, `4781832...` resolves to `478183235bda...`. |
+| `git fetch origin` | Canonical `9712c9d`; PR #11 head `478183235bda5cdbbcacfb40049f9c45e361a67f` (short `4781832`). |
 | `git diff --check origin/feature/import-center...origin/claude/webhook-portal-source-dossier-b` | Exit 0. |
 | `git diff --name-status`, `git diff --stat`, `git log --oneline` for the same range | Three paths; 392 insertions, 1 deletion; four commits. |
 | Search of added lines for key-shaped strings; `.github/` count | One self-referential match; `0`. |
