@@ -19,4 +19,3 @@ literally but can mark rows from differently keyed imports as duplicates. Fix th
 migration) or amend the ADR. F2 (interrupted-import recovery through the UI, untested stale replay) needs a code fix.
 
 I did not run any check on `6d4d17d`; browser, CI and hosted Supabase remain unverified. Details are in the handoff.
-
