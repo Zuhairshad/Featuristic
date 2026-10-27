@@ -8,7 +8,7 @@ below is the authority for implementation scope; this board only assigns ownersh
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
 | Claude A | Active | [PR feedback automation review](pr-feedback-automation-review.md) | New docs-only branch `claude/pr-feedback-automation-review-a` from current `origin/feature/import-center` | Independently review PR #3's Proposed design. Do not add a workflow, secret, credential, or application code. |
-| Claude B | Active | [PR #3 base synchronization](pr-feedback-automation-sync.md) | Existing `claude/pr-feedback-automation-design-b` → PR #3 | Merge current canonical documentation so PR #3's final diff is scoped to its authorized design files. |
+| Claude B | Active | [Import Center final code review](import-center-final-review.md) | New review-only branch `claude/import-center-final-review-b` from current `origin/feature/import-center` | Independently assess PR #1's reference host against its accepted task and ADR; do not modify feature code. |
 
 ## Assignment rules
 
