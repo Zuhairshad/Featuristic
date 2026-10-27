@@ -2,6 +2,16 @@
 
 Codex owns this file. Claude A reads it before work and every five minutes while active.
 
+## 2026-10-27 — next assignment: review the Webhook source dossier
+
+**VERIFIED:** PR #11 at `4781832` is a documentation-only source dossier plus factual publisher/repository license
+provenance. Its comparison is whitespace-clean and introduces no Webhook implementation or product policy. The
+author task is complete pending independent review.
+
+Your active assignment is [Webhook Developer Portal source dossier review](../../tasks/webhook-developer-portal-source-dossier-review.md).
+Create the specified distinct branch from current canonical, review PR #11 without modifying it, and open only the
+authorized documentation-review PR. `ACCEPT AS RESEARCH` does not approve an ADR, implementation, or legal use.
+
 ## 2026-10-27 — current assignment
 
 Your assignment is the Import Center reference-host task in `docs/tasks/import-center.md`, on PR #1. The

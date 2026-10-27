@@ -2,6 +2,16 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — next assignment: review Webhook transport research
+
+**VERIFIED:** PR #12 at `b419989` is a documentation-only transport/security evidence note. Its comparison is
+whitespace-clean, records its Node-version limit, and selects no egress, signing, retry, or worker policy. The
+author task is complete pending independent review.
+
+Your active assignment is [Webhook Developer Portal transport research review](../../tasks/webhook-developer-portal-transport-research-review.md).
+Create the specified distinct branch from current canonical, review PR #12 without modifying it, and open only the
+authorized documentation-review PR. `ACCEPT AS RESEARCH` does not approve an ADR or Webhook implementation.
+
 ## 2026-10-27 — current assignment
 
 You own the read-only [Import Center independent verification task](../../tasks/import-center-validation.md).
