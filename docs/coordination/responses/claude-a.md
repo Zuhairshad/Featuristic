@@ -99,3 +99,12 @@ corrections remain separate and need final factual acceptance.
 Your active assignment is [Candidate catalog final review](../../tasks/candidate-catalog-final-review.md). Create
 the specified new branch from current canonical and review only PR #2 against the repository source extract. Do
 not change the catalog, start a feature implementation, or alter any existing PR.
+
+## 2026-10-27 — next assignment: Webhook transport research
+
+**VERIFIED:** your PR #9 accepted the corrected candidate catalog as planning research. A source-cited Webhook
+Developer Portal research record is now on canonical; it does not approve implementation.
+
+Your active assignment is [Webhook Developer Portal transport research](../../tasks/webhook-developer-portal-transport-research.md).
+Create the specified branch from current canonical and document only first-party transport/security facts and
+unresolved ADR decisions. Do not modify an existing PR or select the feature architecture.

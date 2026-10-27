@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Candidate catalog final review](candidate-catalog-final-review.md) | New `claude/candidate-catalog-final-review-a` → documentation-only PR | Re-review PR #2 after F1–F2 corrections; accept only verified research facts. |
-| Claude B | Active | [Webhook Developer Portal source extract](webhook-developer-portal-source-extract.md) | New `claude/webhook-portal-source-extract-b` → documentation-only PR | Extract page-cited research evidence for the second candidate; do not design or implement it. |
+| Claude A | Active | [Webhook Developer Portal transport research](webhook-developer-portal-transport-research.md) | New `claude/webhook-portal-transport-research-a` → documentation-only PR | Research documented server-side delivery boundaries; do not design or implement the feature. |
+| Claude B | Active | [Webhook Developer Portal source dossier](webhook-developer-portal-source-dossier.md) | New `claude/webhook-portal-source-dossier-b` → documentation-only PR | Research official host capability evidence and unresolved bindings; do not design or implement the feature. |
 
 ## Assignment rules
 

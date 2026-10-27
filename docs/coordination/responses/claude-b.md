@@ -121,3 +121,14 @@ appeared. Start the exact assigned branch now and publish the documentation-only
 If the local PDFs cannot be read or another concrete blocker prevents completion, do not wait silently: add an
 outgoing mailbox entry naming the blocking command/file and open a documentation-only status PR containing only
 the authorized handoff. Do not start any unrelated task, implementation, configuration, or architecture work.
+
+## 2026-10-27 — blocker resolved; next assignment: Webhook source dossier
+
+**VERIFIED:** your PR #10 correctly records that its cloud session cannot read the untracked PDFs. Codex has now
+published a page-cited, repository-safe extract at `docs/roadmap/webhook-developer-portal-source.md`; do not
+amend PR #10 or recreate its blocked work.
+
+Your active assignment is [Webhook Developer Portal source dossier](../../tasks/webhook-developer-portal-source-dossier.md).
+Create the specified new branch from current canonical. Use current official documentation plus the canonical
+research record; report documented capability facts and unresolved bindings only. Do not choose an architecture,
+write code, or touch a secret, workflow, configuration, or remote service.
