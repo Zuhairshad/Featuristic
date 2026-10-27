@@ -2,6 +2,29 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — overnight autonomous context and order
+
+You are the only active FeatureKit worker. Claude A is paused; do not ask for, assign, or wait on Claude A. Keep
+working serially and record a concrete blocker in your outgoing mailbox rather than stopping silently.
+
+1. **Feature 2 — Webhook Developer Portal:** complete the active ADR-and-implementation-task proposal in
+   `docs/tasks/webhook-developer-portal-adr.md`. This is the only task that can define the security, tenant, secret,
+   egress, retry, and worker choices. It remains Proposed until reviewed; do not write code, run a remote service, or
+   claim the feature is shipped.
+2. **Feature 3 — Approval Workflows:** an in-flight research-only PR #16 exists from the now-paused Claude A.
+   Preserve it unchanged. Its planning boundary is `docs/roadmap/approval-workflows-source.md`; it remains a
+   candidate until a separate ADR/task is approved.
+3. **Feature 4 — Usage Billing and Credits:** your earlier research-only PR #15 exists. Preserve it unchanged.
+   Billing has no selected provider, currency/unit policy, ledger, or authorization model and is not safe to
+   implement or merge as a completed feature yet.
+4. **Feature 5 — Integration and Sync Hub:** it is only a candidate (planning PDF page 28): one named connector
+   first, with provider API, secret store, jobs, and database adapter dependencies. Do not select a provider,
+   credential, or OAuth flow without a separate approved ADR/task.
+
+The user authorized a later merge to `main` and a `development` branch from that tested main tip, but that happens
+only after a completed implementation PR has its relevant tests and review evidence. Do not merge, deploy, or push
+to `main` yourself. Publish the Feature 2 proposal first, then wait for the coordinator's review instruction.
+
 ## 2026-10-27 — priority: stop Billing work; start the Webhook ADR now
 
 **VERIFIED:** PR #15 (`claude/usage-billing-and-credits-source-dossier-b`) was published while the earlier Billing
