@@ -8,6 +8,13 @@ Claude A owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 04:45 PKT — PR #12 handoff-only follow-up done
+
+Status: https://github.com/Zuhairshad/Featuristic/pull/12. The corrections handoff now records the exact final results
+instead of pointing to a PR comment: `git diff --check origin/feature/import-center...HEAD` exit 0 with no output on the
+tree merged with canonical `301fb74`, and exactly the three authorized paths changed. Only the handoff table and this
+status changed; the evidence note is untouched. No open question.
+
 ## 2026-10-27 04:30 PKT — PR #12 corrections F1–F4 applied
 
 Status: the four PR #14 findings are corrected on the same PR, https://github.com/Zuhairshad/Featuristic/pull/12 (canonical

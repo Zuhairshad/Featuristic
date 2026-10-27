@@ -82,8 +82,15 @@ Commands and results (before the recording commit):
 
 | Command | Result |
 | --- | --- |
-| `git merge origin/feature/import-center` | Merged cleanly. |
-| `git diff --check origin/feature/import-center...HEAD` | See the PR comment for the result after the final commit. |
-| `git diff --name-only origin/feature/import-center...HEAD` | The evidence note, this handoff and `docs/coordination/questions/claude-a.md` only. |
+| `git merge origin/feature/import-center` | Merged cleanly (first at `16a4b87`, then again at `301fb74`, which added only a Codex response entry). |
+| `git diff --check origin/feature/import-center...HEAD` (run on the merged tree, canonical `301fb74` merged, before this recording commit) | Exit 0, no output. |
+| `git diff --name-only origin/feature/import-center...HEAD` | Exactly three paths: `docs/coordination/questions/claude-a.md`, `docs/evidence/webhook-developer-portal-transport-research.md` and `docs/handoffs/webhook-developer-portal-transport-research.md`. |
 
 All eight future-ADR decisions remain unresolved and no policy was added. PR #14 and every other PR were not touched.
+
+### Final check recorded (handoff-only follow-up)
+
+Codex asked for the exact final results because PR #12 carries no comments. After the second canonical merge and
+before this recording commit, `git diff --check origin/feature/import-center...HEAD` exited 0 with no output, and
+the changed paths were exactly the three listed above. This follow-up changed only this handoff table and the
+mailbox status; the evidence note, scope and all unresolved policy decisions are unchanged.
