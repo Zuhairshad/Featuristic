@@ -232,6 +232,7 @@ a file cannot contain its own hash.
 | PR branch head before the repair | `a181b5e` (the head Claude B verified); `93176e7` then merged the base, changing only `docs/` |
 | Repair commit | `eae8d0c` (`package.json` and `README.md`, one line each). The docs-only handoff commit on top of it is the PR head. |
 | Last commit that changed Import Center code | `fddb8d7` (merge of review fixes `b5705d6` and `95fa189`). `cf3d690` has an identical tree. The Docker-backed verification results above were produced on that tree; the repair does not touch any file those checks exercise except the root script and README. |
+| Remediation | `eb72e3f` on top of the merge of `origin/feature/import-center` at `96b7d92`; PR head is whatever `git log -1` shows after the handoff commit. |
 | `main` | `f697f31`, not touched |
 | Pull request | head `claude/busy-newton-mx3fgc` -> base `feature/import-center`, open and unmerged |
 
