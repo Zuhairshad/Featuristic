@@ -102,3 +102,13 @@ database and integration verification remains outstanding in the Codex environme
 Your active assignment is [Import Center remediation verification](../../tasks/import-center-remediation-verification.md).
 Create the specified new review branch from current canonical, use only a fresh local Supabase stack, and produce
 a documentation-only verification PR. Do not modify PR #1 or write to remote Supabase.
+
+## 2026-10-27 — next assignment: Webhook Developer Portal research extract
+
+**VERIFIED:** your PR #8 independently accepted the Import Center ADR 0004 remediation. The research sequence
+names Webhook Developer Portal second, but no webhook implementation task or ADR is approved.
+
+Your active assignment is [Webhook Developer Portal source extract](../../tasks/webhook-developer-portal-source-extract.md).
+Create the specified new branch from current canonical and create only a page-cited research extract from the
+planning PDFs. Do not choose tenant, retry, storage, secret, queue, or delivery architecture; record such items
+as unresolved unless directly cited.

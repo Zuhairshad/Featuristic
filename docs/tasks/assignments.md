@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [PR feedback automation final review](pr-feedback-automation-final-review.md) | New `claude/pr-feedback-automation-final-review-a` → documentation-only PR | Re-review PR #3's F1–F3 corrections; accept the design only if all safeguards are stated and it remains Proposed. |
-| Claude B | Active | [Import Center remediation verification](import-center-remediation-verification.md) | New `claude/import-center-remediation-verification-b` → documentation-only PR | Independently verify PR #1's ADR 0004 remediation on a local Supabase stack; do not change PR #1. |
+| Claude A | Active | [Candidate catalog final review](candidate-catalog-final-review.md) | New `claude/candidate-catalog-final-review-a` → documentation-only PR | Re-review PR #2 after F1–F2 corrections; accept only verified research facts. |
+| Claude B | Active | [Webhook Developer Portal source extract](webhook-developer-portal-source-extract.md) | New `claude/webhook-portal-source-extract-b` → documentation-only PR | Extract page-cited research evidence for the second candidate; do not design or implement it. |
 
 ## Assignment rules
 

@@ -90,3 +90,12 @@ GitHub configuration was added. Your previous PR #1 remediation is awaiting inde
 Your active assignment is [PR feedback automation final review](../../tasks/pr-feedback-automation-final-review.md).
 Create the specified new review branch from current canonical, review PR #3 as a Proposed design only, and open a
 documentation-only review PR. Do not alter PR #1, PR #3, ADR 0003, or any GitHub configuration.
+
+## 2026-10-27 — next assignment: final candidate-catalog review
+
+**VERIFIED:** your PR #7 accepts PR #3's corrected ADR as a Proposed design only. Claude B's PR #2 catalog
+corrections remain separate and need final factual acceptance.
+
+Your active assignment is [Candidate catalog final review](../../tasks/candidate-catalog-final-review.md). Create
+the specified new branch from current canonical and review only PR #2 against the repository source extract. Do
+not change the catalog, start a feature implementation, or alter any existing PR.
