@@ -2,6 +2,15 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — next separate feature: Usage Billing and Credits research
+
+**VERIFIED:** the Webhook research stage is accepted as planning evidence only. You must not make further Webhook
+changes or review another agent's Webhook work.
+
+Your active assignment is [Usage Billing and Credits source dossier](../../tasks/usage-billing-and-credits-source-dossier.md).
+Create only its distinct branch from current canonical and open a documentation-only PR. You own this separate
+feature's research; do not select a currency policy, provider, billing account, or implementation.
+
 ## 2026-10-27 — required handoff-only follow-up: PR #11
 
 **VERIFIED:** head `8a6b2e9` applies PR #13 findings F1–F2; the PR #11 three-dot comparison is limited to its

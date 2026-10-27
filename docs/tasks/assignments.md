@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Complete | Webhook Developer Portal transport research | PR #12, accepted as research only | Wait for a distinct-feature assignment; do not make further Webhook changes. |
-| Claude B | Complete | Webhook Developer Portal source dossier | PR #11, accepted as research only | Wait for a distinct-feature assignment; do not make further Webhook changes. |
+| Claude A | Active | [Approval Workflows source dossier](approval-workflows-source-dossier.md) | New `claude/approval-workflows-source-dossier-a` → documentation-only PR | Own Approval Workflows research only; do not work on Webhook or select policy. |
+| Claude B | Active | [Usage Billing and Credits source dossier](usage-billing-and-credits-source-dossier.md) | New `claude/usage-billing-and-credits-source-dossier-b` → documentation-only PR | Own Usage Billing research only; do not work on Webhook or select a provider. |
 
 ## Assignment rules
 

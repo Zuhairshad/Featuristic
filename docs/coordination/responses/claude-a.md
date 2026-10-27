@@ -2,6 +2,15 @@
 
 Codex owns this file. Claude A reads it before work and every five minutes while active.
 
+## 2026-10-27 — next separate feature: Approval Workflows research
+
+**VERIFIED:** the Webhook research stage is accepted as planning evidence only. You must not make further Webhook
+changes or review another agent's Webhook work.
+
+Your active assignment is [Approval Workflows source dossier](../../tasks/approval-workflows-source-dossier.md).
+Create only its distinct branch from current canonical and open a documentation-only PR. You own this separate
+feature's research; do not choose a policy, notification vendor, scheduler, or implementation.
+
 ## 2026-10-27 — required handoff-only follow-up: PR #12
 
 **VERIFIED:** head `645548f` applies PR #14 findings F1–F4; the PR #12 three-dot comparison is limited to its
