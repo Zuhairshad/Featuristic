@@ -33,9 +33,16 @@ when an ADR is written.
 | I-v4 | IANA, [IPv4 Special-Purpose Address Registry](https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml) | as retrieved | reference list of non-global IPv4 blocks |
 
 **Version skew to note.** The repository declares `"node": ">=22.12.0"` in the root `package.json`; the Node.js
-pages above describe v26.12.1. Only long-standing APIs are cited (each shows an "Added in" version well below 22),
-but an ADR must re-check each API against the supported Node.js range. The fetched Next.js docs describe v16.4.3,
-the version pinned by the Import Center fixture.
+pages above describe v26.12.1. Most cited Node.js APIs show an "Added in" version below 22; re-checked for this
+note: `fetch` v17.5.0, `AbortSignal.timeout` v17.3.0, `http.request()` v0.3.6, `request.setTimeout()` v0.5.9,
+`server.headersTimeout` v11.3.0, `server.requestTimeout` v14.11.0, `http.maxHeaderSize` v11.6.0, `net.isIP()` v0.3.0,
+`net.BlockList` v15.0.0, `dns.lookup()` v0.1.90, `crypto.createHmac()` v0.1.94, `crypto.timingSafeEqual()` v6.6.0 and
+`crypto.randomUUID()` v15.6.0. **One cited feature is an exception:** F5.5 relies on the `http` page's "Built-in Proxy
+Support" section, which the page lists as "Added in: v24.5.0, v22.21.0" with "Stability: 1.1 - Active development",
+and the related `http.setGlobalProxyFromEnv()` as added in v25.4.0 and v24.14.0. F5.5 therefore does **not** describe
+Node.js 22.12.0 to 22.20.x, which are inside the supported range. Per-option additions (for example the `signal`,
+`timeout` and `lookup` options) were not re-checked. An ADR must re-check every API against the supported Node.js
+range. The fetched Next.js docs describe v16.4.3, the version pinned by the Import Center fixture.
 
 ## Facts
 
@@ -71,7 +78,12 @@ saying the opposite is true.
   `timeout` ("the socket timeout in milliseconds. This will set the timeout before the socket is connected")
   (N-http). `request.setTimeout()` calls `socket.setTimeout()` once a socket is assigned and connected (N-http).
   The pages describe a **socket** timeout; they do not describe a single deadline for DNS, connect, request,
-  response headers and body together.
+  response headers and body together. The same page says that "Setting the `timeout` option or using the
+  `setTimeout()` function will not abort the request or do anything besides add a `'timeout'` event", and that the
+  `'timeout'` event "only notifies that the socket has been idle. The request must be destroyed manually" (N-http).
+  By contrast, it says passing an `AbortSignal` and calling `abort()` "will behave the same way as calling
+  `.destroy()` on the request" (N-http). A socket timeout alone therefore does not cancel a request; this note
+  selects no timeout policy.
 - **F2.3** The Fetch Standard itself defines abort but no timeout; a timeout comes from composing an abort
   signal (W-fetch, N-glob). What a signal timeout does to an in-flight response *body* read is **not stated** in
   the sources read.
@@ -112,8 +124,11 @@ saying the opposite is true.
   not bound body size.
 - **F4.3** Next.js documents a **10MB default** for the in-memory copy of a request body that it clones "when
   proxy is used" so the proxy and the route handler can both read it, configurable with
-  `experimental.proxyClientMaxBodySize`; the page marks the feature "currently experimental and subject to
-  change" (X-body). That is an inbound setting. Route Handlers read the body through standard Web methods such as
+  `experimental.proxyClientMaxBodySize` (X-body). The published page, read directly on 2026-10-27, states "This feature
+  is currently experimental and subject to change" and says it is not recommended for production; the Markdown source
+  at the v16.4.3 tag, as reported by the PR #14 review, nests the option under `experimental` with front matter
+  `version: experimental` and does not contain that sentence. The quotation therefore rests on the published page
+  alone. That is an inbound setting. Route Handlers read the body through standard Web methods such as
   `request.json()` and `request.formData()` (X-route), and the route page documents no body-size limit.
 - **F4.4** `http.request()` returns a stream of the response; the Node page documents no response-size cap for the
   client (N-http).
@@ -140,7 +155,7 @@ These are absences in the sources read, not statements that a protection is impo
   `10.0.0.0/8`, `127.0.0.0/8`, `169.254.0.0/16`) with a "Globally Reachable" column (I-v4); it is a reference
   list, not an enforcement mechanism, and an IPv6 registry exists separately (not read in detail).
 - **F5.7 Idempotency.** Of the methods RFC 9110 defines, "PUT, DELETE, and safe request methods are idempotent";
-  `POST` is not in that list (R-9110). Nothing in the platform deduplicates a repeated `POST`.
+  `POST` is not in that list (R-9110). The sources read describe no deduplication of a repeated `POST`.
 
 ### 6. Signing, identity and verification primitives
 
@@ -165,7 +180,7 @@ policy.
 | --- | --- | --- |
 | Endpoint validation | F1.1 to F1.5, F5.6 | Which schemes, ports, credentials and host forms are acceptable; whether to validate the parsed host or the input string; allowed ports versus the bad-port list. |
 | Forbidden-destination blocking | F1.3, F5.1 to F5.6, F3.4 | Which address ranges are forbidden; where the check runs (before connect, at connect, per redirect); how DNS rebinding and multi-address answers are handled; whether `net.BlockList` can be applied to the chosen client. |
-| Bounded retries | F2.1 to F2.6, F3.1 to F3.3, F4.1 to F4.4, F6.4 | Attempt count, backoff, per-attempt deadline, response-size cap, whether redirects are followed, handling of `Retry-After`. |
+| Bounded retries | F2.1 to F2.6 (F2.2 in particular: a documented socket timeout does not abort the request), F3.1 to F3.3, F4.1 to F4.4, F6.4 | Attempt count, backoff, per-attempt deadline, response-size cap, whether redirects are followed, handling of `Retry-After`. |
 | Stable event identity | F5.7, F6.2, F2.6 | The identifier scheme, where it is generated (the candidate says transactional event intent), and the receiver-visible header name. |
 | Payload redaction | None found in the platform sources | What is redacted, where (storage, logs, UI), and who may see it. The platform sources read contain no redaction facility. |
 | Delivery accounting | F2.2, F2.6, F4.1 | What is recorded per attempt (status, timing, truncated body), retention period, and how a timed-out-but-committed attempt is shown. |

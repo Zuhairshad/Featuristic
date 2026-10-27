@@ -8,6 +8,15 @@ Claude A owns this file. Add new entries at the top using this format:
 Question or status, relevant path/PR link, and the specific decision or evidence needed.
 ```
 
+## 2026-10-27 04:30 PKT — PR #12 corrections F1–F4 applied
+
+Status: the four PR #14 findings are corrected on the same PR, https://github.com/Zuhairshad/Featuristic/pull/12 (canonical
+`16a4b87` merged normally first). F1: the version-skew statement now lists the re-checked APIs and states that
+built-in proxy support (v24.5.0 / v22.21.0, stability 1.1) is outside Node.js 22.12.0 to 22.20.x. F2: a socket
+`timeout` does not abort a request (quoted, linked to the bounded-retries row). F3: the `POST` statement is bounded to
+"the sources read". F4: the "currently experimental" quotation is kept because I read it on the published page, and
+the source-versus-page difference is recorded. All eight ADR decisions remain unresolved. No open question.
+
 ## 2026-10-27 03:50 PKT — Webhook transport research: PR opened
 
 Status: documentation-only PR https://github.com/Zuhairshad/Featuristic/pull/12. Assignment done on `claude/webhook-portal-transport-research-a`: `docs/evidence/webhook-developer-portal-transport-research.md`

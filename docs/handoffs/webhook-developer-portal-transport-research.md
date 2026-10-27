@@ -26,7 +26,7 @@ fetched with `curl` on 2026-10-27. No community material was used, no endpoint w
 | Step | Result |
 | --- | --- |
 | Fetch each page, strip markup, search for the exact API and rule named in each fact | Every cited fact has a source id; passages were read in context, not from the table of contents. |
-| Compare the repository's Node range (`>=22.12.0`) with the documented version (Node.js v26.12.1) | Only APIs added long before v22 are cited; the skew is stated in the note for the ADR author to re-check. |
+| Compare the repository's Node range (`>=22.12.0`) with the documented version (Node.js v26.12.1) | **Corrected (PR #14 F1).** Thirteen cited APIs were re-checked and show "Added in" versions below 22, but the built-in proxy support cited in F5.5 is listed as added in v24.5.0 and v22.21.0 (stability 1.1), so F5.5 does not cover Node.js 22.12.0 to 22.20.x. Per-option additions were not re-checked. The earlier statement that every cited API predates v22 was wrong and is removed. |
 | Check licence statements where the page gives one | WHATWG (CC BY 4.0, code BSD 3-Clause) and RFC 9110 (IETF Trust) recorded; Node.js, Next.js and IANA licence terms were not checked and the note says so. |
 | Absence claims ("not stated") | Phrased as absent from the pages read, not as a claim that a protection is impossible; the note names what each search covered. |
 | `git diff --check` | Exit 0. |
@@ -56,3 +56,34 @@ fetched with `curl` on 2026-10-27. No community material was used, no endpoint w
 - This branch adds the evidence note, this handoff, and a status entry in `docs/coordination/questions/claude-a.md`.
   Read the final head from `git log -1` or the PR; a file cannot contain its own hash.
 - No existing PR, ADR, task, code, dependency, workflow, secret or other mailbox was changed. Nothing was merged.
+
+## Corrections after the PR #14 review
+
+Task: [`docs/tasks/webhook-developer-portal-transport-research-corrections.md`](../tasks/webhook-developer-portal-transport-research-corrections.md).
+Review: PR #14 (`claude/webhook-portal-transport-research-review-b`, Claude B), verdict REQUEST CHANGES, findings F1 to F4.
+
+| Item | Value |
+| --- | --- |
+| Head reviewed in PR #14 | `b419989b921668a2a4490bed5b2d3b415d3fdc57` |
+| Canonical merged first | `origin/feature/import-center` at `16a4b87` (normal merge; no conflicts; no rebase or force-push) |
+
+| Finding | Correction in `docs/evidence/webhook-developer-portal-transport-research.md` |
+| --- | --- |
+| F1 | "Version skew" now lists the re-checked APIs and states the exception: built-in proxy support (F5.5) is listed as added in v24.5.0 and v22.21.0 with stability 1.1, and `http.setGlobalProxyFromEnv()` in v25.4.0 and v24.14.0, so F5.5 does not describe Node.js 22.12.0 to 22.20.x. The "well below 22" claim is removed. This handoff's method row is corrected the same way. |
+| F2 | F2.2 now quotes the `http` page: the `timeout` option and `setTimeout()` "will not abort the request or do anything besides add a 'timeout' event", the request "must be destroyed manually", while an `AbortSignal` abort behaves like `.destroy()`. The bounded-retries mapping row points to F2.2. No timeout policy is selected. |
+| F3 | F5.7 now reads "The sources read describe no deduplication of a repeated `POST`." |
+| F4 | F4.3 keeps the quoted phrase because I read it directly on the published `nextjs.org` page on 2026-10-27, and records that the v16.4.3 Markdown source (per PR #14) has `version: experimental` front matter and not that sentence, so the quotation rests on the published page alone. |
+
+Re-reads for these corrections (2026-10-27): the Node.js `http`, `globals`, `net`, `dns` and `crypto` pages (the
+"Added in" lines and the timeout sentences) and the published `proxyClientMaxBodySize` page. All four findings were
+confirmed against the sources before editing.
+
+Commands and results (before the recording commit):
+
+| Command | Result |
+| --- | --- |
+| `git merge origin/feature/import-center` | Merged cleanly. |
+| `git diff --check origin/feature/import-center...HEAD` | See the PR comment for the result after the final commit. |
+| `git diff --name-only origin/feature/import-center...HEAD` | The evidence note, this handoff and `docs/coordination/questions/claude-a.md` only. |
+
+All eight future-ADR decisions remain unresolved and no policy was added. PR #14 and every other PR were not touched.
