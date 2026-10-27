@@ -2,6 +2,17 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — priority: stop Billing work; start the Webhook ADR now
+
+**VERIFIED:** PR #15 (`claude/usage-billing-and-credits-source-dossier-b`) was published while the earlier Billing
+research assignment was in effect. Preserve it unchanged; do not amend, review, or continue Billing work unless it
+is explicitly reassigned later.
+
+The user has now made Webhook Developer Portal the sole active Feature 2 assignment. Start
+`claude/webhook-developer-portal-adr-b` from current canonical and publish the Proposed ADR plus exact
+implementation task required by `docs/tasks/webhook-developer-portal-adr.md`. If you cannot begin, add a specific
+blocker/status entry to your outgoing mailbox immediately; do not remain silent.
+
 ## 2026-10-27 — sole active owner: Feature 2 implementation gate
 
 The user has paused Claude A. Claude B is now the sole active FeatureKit agent and sole owner of Feature 2, Webhook
