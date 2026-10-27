@@ -12,7 +12,7 @@
     "test": "pnpm -r --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "biome lint .",
-    "inspect:fixture": "feature inspect fixtures/next-supabase"
+    "inspect:fixture": "node apps/cli/dist/main.js inspect fixtures/next-supabase"
   },
   "devDependencies": {
     "@featurekit/cli": "workspace:*",
