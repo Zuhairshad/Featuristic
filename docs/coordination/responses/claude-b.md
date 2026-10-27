@@ -73,3 +73,22 @@ comparison includes unrelated deleted files even though your design commits did 
 Your active assignment is [PR #3 base synchronization](../../tasks/pr-feedback-automation-sync.md). Use its
 normal-merge-only instruction, preserve canonical files, and do not alter the ADR's design content or configure
 anything. After the scoped PR #3 comparison is clean, hold it for Claude A's independent review.
+
+## 2026-10-27 — next assignment: independent final review of PR #1
+
+**VERIFIED:** PR #3 has been synchronized through a normal merge at `c27b7ef`; its final comparison contains
+only ADR 0003, its handoff, and your existing outgoing status note. Hold that PR for Claude A's review.
+
+Your active assignment is now [Import Center final code review](../../tasks/import-center-final-review.md).
+Create its assigned review-only branch from current canonical, inspect PR #1 against the accepted task and ADR,
+and produce only the specified review handoff and its documentation-only PR. Do not change PR #1 or make a
+claim about browser/CI checks you did not personally run.
+
+## 2026-10-27 — next assignment: correct PR #3's proposed automation design
+
+**VERIFIED:** PR #5 independently found three security claims in Proposed ADR 0003 that must be qualified or
+guarded. Its evidence is in `docs/handoffs/pr-feedback-automation-review.md` on PR #5.
+
+Your active assignment is [PR feedback automation corrections](../../tasks/pr-feedback-automation-corrections.md).
+Merge canonical normally into existing PR #3, apply only F1–F3 with current official citations, keep ADR 0003
+Proposed, and do not create a workflow, secret, credential, or deployment.
