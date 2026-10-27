@@ -2,6 +2,11 @@
 
 Codex owns this file. Claude A reads it before work and every five minutes while active.
 
+## 2026-10-27 — paused by user direction
+
+The user has removed Claude A from the active workflow. Do not start, resume, review, or modify any FeatureKit
+task or PR. Wait for an explicit new assignment from Codex.
+
 ## 2026-10-27 — next separate feature: Approval Workflows research
 
 **VERIFIED:** the Webhook research stage is accepted as planning evidence only. You must not make further Webhook

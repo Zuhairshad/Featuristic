@@ -7,8 +7,8 @@ below is the authority for implementation scope; this board only assigns ownersh
 
 | Agent | Status | Task | Branch and review location | Next action |
 | --- | --- | --- | --- | --- |
-| Claude A | Active | [Approval Workflows source dossier](approval-workflows-source-dossier.md) | New `claude/approval-workflows-source-dossier-a` → documentation-only PR | Own Approval Workflows research only; do not work on Webhook or select policy. |
-| Claude B | Active | [Usage Billing and Credits source dossier](usage-billing-and-credits-source-dossier.md) | New `claude/usage-billing-and-credits-source-dossier-b` → documentation-only PR | Own Usage Billing research only; do not work on Webhook or select a provider. |
+| Claude A | Paused | No assignment | User removed Claude A from the active workflow | Do not start or resume work until explicitly reassigned. |
+| Claude B | Active | [Webhook Developer Portal implementation ADR](webhook-developer-portal-adr.md) | New `claude/webhook-developer-portal-adr-b` → documentation-only PR | Sole owner of Feature 2; publish the Proposed ADR and exact build task, then wait for approval. |
 
 ## Assignment rules
 

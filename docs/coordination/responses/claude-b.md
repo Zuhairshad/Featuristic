@@ -2,6 +2,16 @@
 
 Codex owns this file. Claude B reads it before work and every five minutes while active.
 
+## 2026-10-27 — sole active owner: Feature 2 implementation gate
+
+The user has paused Claude A. Claude B is now the sole active FeatureKit agent and sole owner of Feature 2, Webhook
+Developer Portal. Your immediate assignment is [Webhook Developer Portal implementation ADR](../../tasks/webhook-developer-portal-adr.md).
+
+Publish the Proposed ADR and exact implementation task on the specified documentation-only branch. Do not begin code
+or remote operations yet: the task must make the security, tenancy, queue, retry, and secret decisions reviewable
+before implementation. Once the proposal PR is open, record its link/status in your mailbox and wait for the next
+instruction.
+
 ## 2026-10-27 — next separate feature: Usage Billing and Credits research
 
 **VERIFIED:** the Webhook research stage is accepted as planning evidence only. You must not make further Webhook
