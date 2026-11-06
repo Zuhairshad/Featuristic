@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "ScraplingServer": {
+      "type": "stdio",
+      "command": "/usr/local/bin/scrapling-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
